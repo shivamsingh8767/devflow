@@ -1,32 +1,53 @@
 /**
  * DEVFLOW — Developer Productivity Platform
- * Modular Vanilla JavaScript Controller
+ * Vanilla JavaScript Application Controller & Supabase Lifecycle Manager
  */
 
+import { authService } from './services/authService.js';
+import { workspaceService } from './services/workspaceService.js';
+import { projectService } from './services/projectService.js';
+import { taskService } from './services/taskService.js';
+import { testSupabaseConnection } from './services/supabaseClient.js';
 import { modals } from './ui/modals.js';
 import { dashboard } from './ui/dashboard.js';
 import { toast } from './ui/toast.js';
-import { workspaceService } from './services/workspaceService.js';
 
-document.addEventListener('DOMContentLoaded', () => {
-  // Initialize Header, Mobile Menu, and Navigation Links
+document.addEventListener('DOMContentLoaded', async () => {
+  // 1. Initialize Header, Mobile Menu, and Navigation Links
   initHeaderScroll();
   initMobileMenu();
   initSmoothNavigation();
 
-  // Initialize Hero Mockup & Interactive Panel
+  // 2. Initialize Hero Mockup & Interactive Panel
   initPanelPills();
   initHotspotTooltip();
 
-  // Initialize Scroll Reveal & Stats Counter
+  // 3. Initialize Scroll Reveal & Stats Counter
   initScrollReveal();
   initStatsCounter();
 
-  // Initialize Interactive Product Dashboard
+  // 4. Initialize Core Data Services & Auth Layer
+  await initServices();
+
+  // 5. Initialize Interactive Product Dashboard
   dashboard.init();
 
-  // Initialize All Modal Dialogs
-  modals.initWorkspaceModal((workspace) => {
+  // 6. Initialize Header Auth UI Synchronizer
+  initHeaderAuth();
+
+  // 7. Initialize All Modal Dialogs
+  modals.initAuthModal((_user) => {
+    // On successful login or signup, open workspace onboarding or show dashboard
+    const currentWs = workspaceService.getWorkspace();
+    if (!currentWs || !currentWs.id) {
+      const wsModal = document.getElementById('workspace-onboarding-modal');
+      if (wsModal) modals.openModal(wsModal);
+    } else {
+      dashboard.show();
+    }
+  });
+
+  modals.initWorkspaceModal((_workspace) => {
     // When workspace is created from Hero CTA, switch and reveal dashboard
     dashboard.show();
   });
@@ -41,6 +62,81 @@ document.addEventListener('DOMContentLoaded', () => {
   modals.initDocsModal();
   modals.initContactModal();
 });
+
+/**
+ * Initialize backend service singletons
+ */
+async function initServices() {
+  try {
+    await testSupabaseConnection();
+    await authService.init();
+    await workspaceService.init();
+    await projectService.init();
+    await taskService.init();
+  } catch (err) {
+    console.warn('Service initialization notice:', err);
+  }
+}
+
+/**
+ * Synchronize Header Auth UI with Auth Service
+ */
+function initHeaderAuth() {
+  const signInBtn = document.getElementById('btn-header-signin');
+  const userProfile = document.getElementById('header-user-profile');
+  const userAvatar = document.getElementById('header-user-avatar');
+  const userEmail = document.getElementById('header-user-email');
+  const signOutBtn = document.getElementById('btn-header-signout');
+
+  const mobileSignInBtn = document.getElementById('btn-mobile-signin');
+  const mobileSignOutBtn = document.getElementById('btn-mobile-signout');
+
+  const syncAuthUi = (user) => {
+    if (user) {
+      const email = user.email || 'user@devflow.io';
+      const name = user.user_metadata?.full_name || email.split('@')[0];
+      const initials = (name || email).substring(0, 2).toUpperCase();
+
+      if (signInBtn) signInBtn.style.display = 'none';
+      if (userProfile) userProfile.style.display = 'flex';
+      if (userAvatar) userAvatar.textContent = initials;
+      if (userEmail) userEmail.textContent = email;
+
+      if (mobileSignInBtn) mobileSignInBtn.style.display = 'none';
+      if (mobileSignOutBtn) mobileSignOutBtn.style.display = 'block';
+    } else {
+      if (signInBtn) signInBtn.style.display = 'inline-flex';
+      if (userProfile) userProfile.style.display = 'none';
+
+      if (mobileSignInBtn) mobileSignInBtn.style.display = 'block';
+      if (mobileSignOutBtn) mobileSignOutBtn.style.display = 'none';
+    }
+  };
+
+  authService.subscribe((user) => {
+    syncAuthUi(user);
+  });
+
+  // Initial sync
+  syncAuthUi(authService.getUser());
+
+  // Sign out handlers
+  const handleSignOut = async () => {
+    try {
+      await authService.signOut();
+      toast.show('Signed out successfully.', 'info');
+    } catch (err) {
+      toast.show('Error signing out.', 'error');
+    }
+  };
+
+  if (signOutBtn) {
+    signOutBtn.addEventListener('click', handleSignOut);
+  }
+  if (mobileSignOutBtn) {
+    mobileSignOutBtn.addEventListener('click', handleSignOut);
+  }
+}
 
 /**
  * 1. Header scroll state for sticky blur/border

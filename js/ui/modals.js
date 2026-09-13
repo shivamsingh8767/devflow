@@ -1,6 +1,7 @@
 /**
  * DEVFLOW — Modal Controller & Dialog Manager
- * Accessible dialogs with focus trapping, backdrop handling, and escape-key listener.
+ * Accessible dialogs with focus trapping, backdrop handling, escape-key listener,
+ * and Supabase CRUD / Authentication integration.
  */
 
 import { featuresDetailsData, docsGuideData } from '../data/demoData.js';
@@ -8,6 +9,7 @@ import { workspaceService } from '../services/workspaceService.js';
 import { projectService } from '../services/projectService.js';
 import { taskService } from '../services/taskService.js';
 import { contactService } from '../services/contactService.js';
+import { authService } from '../services/authService.js';
 import { toast } from './toast.js';
 
 class ModalController {
@@ -52,8 +54,7 @@ class ModalController {
     setTimeout(() => {
       const focusable = modalElement.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
       if (focusable.length > 0) {
-        // Prefer first text input or first action button
-        const firstInput = modalElement.querySelector('input, select, textarea') || focusable[0];
+        const firstInput = modalElement.querySelector('input:not([type="hidden"]), select, textarea') || focusable[0];
         firstInput.focus();
       }
     }, 60);
@@ -74,20 +75,205 @@ class ModalController {
   }
 
   // ==========================================
-  // 1. WORKSPACE ONBOARDING MODAL
+  // 1. AUTHENTICATION MODAL (Sign In / Sign Up)
+  // ==========================================
+  initAuthModal(onAuthSuccess) {
+    const modal = document.getElementById('auth-modal');
+    const form = document.getElementById('auth-form');
+    const openBtns = document.querySelectorAll('.open-auth-btn, #btn-header-signin, #btn-mobile-signin');
+    const closeBtn = document.getElementById('auth-modal-close-btn');
+    const tabSignIn = document.getElementById('auth-tab-signin');
+    const tabSignUp = document.getElementById('auth-tab-signup');
+    const nameGroup = document.getElementById('auth-group-name');
+    const nameInput = document.getElementById('auth-input-name');
+    const emailInput = document.getElementById('auth-input-email');
+    const passwordInput = document.getElementById('auth-input-password');
+    const confirmPassGroup = document.getElementById('auth-group-confirm-password');
+    const confirmPassInput = document.getElementById('auth-input-confirm-password');
+    const submitBtn = document.getElementById('btn-submit-auth');
+    const submitText = document.getElementById('auth-submit-text');
+    const errorAlert = document.getElementById('auth-error-alert');
+    const titleEl = document.getElementById('auth-modal-title');
+    const descEl = document.getElementById('auth-modal-desc');
+    const togglePrompt = document.getElementById('auth-toggle-prompt');
+    const toggleLink = document.getElementById('auth-toggle-link');
+
+    if (!modal) return;
+
+    let authMode = 'signin'; // 'signin' | 'signup'
+    let pendingNextAction = null; // optional callback to trigger after successful login
+
+    const setAuthMode = (mode) => {
+      authMode = mode;
+      if (errorAlert) {
+        errorAlert.style.display = 'none';
+        errorAlert.textContent = '';
+      }
+
+      if (mode === 'signup') {
+        if (tabSignUp) tabSignUp.classList.add('active');
+        if (tabSignIn) tabSignIn.classList.remove('active');
+        if (nameGroup) nameGroup.style.display = 'flex';
+        if (confirmPassGroup) confirmPassGroup.style.display = 'flex';
+        if (titleEl) titleEl.textContent = 'Create DevFlow Account';
+        if (descEl) descEl.textContent = 'Set up your credentials to sync projects, tasks, and team telemetry in Supabase.';
+        if (submitText) submitText.textContent = 'CREATE ACCOUNT';
+        if (togglePrompt) togglePrompt.textContent = 'Already have an account?';
+        if (toggleLink) toggleLink.textContent = 'Sign In';
+      } else {
+        if (tabSignIn) tabSignIn.classList.add('active');
+        if (tabSignUp) tabSignUp.classList.remove('active');
+        if (nameGroup) nameGroup.style.display = 'none';
+        if (confirmPassGroup) confirmPassGroup.style.display = 'none';
+        if (titleEl) titleEl.textContent = 'Sign in to DevFlow';
+        if (descEl) descEl.textContent = 'Access your persistent workspaces, build telemetry, and real-time pipelines.';
+        if (submitText) submitText.textContent = 'SIGN IN';
+        if (togglePrompt) togglePrompt.textContent = "Don't have an account?";
+        if (toggleLink) toggleLink.textContent = 'Create Account';
+      }
+    };
+
+    if (tabSignIn) {
+      tabSignIn.addEventListener('click', () => setAuthMode('signin'));
+    }
+    if (tabSignUp) {
+      tabSignUp.addEventListener('click', () => setAuthMode('signup'));
+    }
+
+    if (toggleLink) {
+      toggleLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        setAuthMode(authMode === 'signin' ? 'signup' : 'signin');
+      });
+    }
+
+    this.openAuth = (preferredMode = 'signin', onComplete = null) => {
+      pendingNextAction = onComplete;
+      setAuthMode(preferredMode);
+      if (emailInput) emailInput.value = '';
+      if (passwordInput) passwordInput.value = '';
+      if (confirmPassInput) confirmPassInput.value = '';
+      if (nameInput) nameInput.value = '';
+      this.openModal(modal);
+    };
+
+    openBtns.forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.openAuth('signin');
+      });
+    });
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => this.closeModal(modal));
+    }
+
+    if (form) {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (errorAlert) {
+          errorAlert.style.display = 'none';
+          errorAlert.textContent = '';
+        }
+
+        const email = emailInput?.value?.trim();
+        const password = passwordInput?.value;
+        const confirmPassword = confirmPassInput?.value;
+        const fullName = nameInput?.value?.trim();
+
+        if (!email || !email.includes('@') || !email.includes('.')) {
+          if (errorAlert) {
+            errorAlert.textContent = 'Please enter a valid email address.';
+            errorAlert.style.display = 'block';
+          }
+          if (emailInput) emailInput.focus();
+          return;
+        }
+
+        if (!password || password.length < 6) {
+          if (errorAlert) {
+            errorAlert.textContent = 'Password must be at least 6 characters.';
+            errorAlert.style.display = 'block';
+          }
+          if (passwordInput) passwordInput.focus();
+          return;
+        }
+
+        if (authMode === 'signup') {
+          if (password !== confirmPassword) {
+            if (errorAlert) {
+              errorAlert.textContent = 'Passwords do not match.';
+              errorAlert.style.display = 'block';
+            }
+            if (confirmPassInput) confirmPassInput.focus();
+            return;
+          }
+        }
+
+        // Loading state
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.classList.add('loading');
+        }
+        if (submitText) {
+          submitText.textContent = authMode === 'signup' ? 'CREATING ACCOUNT...' : 'SIGNING IN...';
+        }
+
+        try {
+          let user;
+          if (authMode === 'signup') {
+            user = await authService.signUp({ email, password, confirmPassword, fullName });
+            toast.show(`Account created for ${user?.email || email}!`, 'success');
+          } else {
+            user = await authService.signIn({ email, password });
+            toast.show(`Welcome back, ${user?.email || email}!`, 'success');
+          }
+
+          this.closeModal(modal);
+
+          if (typeof pendingNextAction === 'function') {
+            const action = pendingNextAction;
+            pendingNextAction = null;
+            action(user);
+          } else if (typeof onAuthSuccess === 'function') {
+            onAuthSuccess(user);
+          }
+        } catch (err) {
+          if (errorAlert) {
+            errorAlert.textContent = err.message || 'Authentication failed. Please try again.';
+            errorAlert.style.display = 'block';
+          }
+        } finally {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('loading');
+          }
+          if (submitText) {
+            submitText.textContent = authMode === 'signup' ? 'CREATE ACCOUNT' : 'SIGN IN';
+          }
+        }
+      });
+    }
+  }
+
+  // ==========================================
+  // 2. WORKSPACE ONBOARDING MODAL
   // ==========================================
   initWorkspaceModal(onWorkspaceCreated) {
     const modal = document.getElementById('workspace-onboarding-modal');
     const form = document.getElementById('workspace-onboarding-form');
     const formView = document.getElementById('workspace-modal-view-form');
     const successView = document.getElementById('workspace-modal-view-success');
-    const openBtns = document.querySelectorAll('.open-workspace-modal-btn, #btn-hero-start');
+    const openBtns = document.querySelectorAll('.open-workspace-modal-btn, #btn-hero-start, #btn-mobile-get-started');
     const closeBtn = document.getElementById('workspace-modal-close-btn');
     const openWorkspaceCta = document.getElementById('btn-open-workspace-cta');
     const nameInput = document.getElementById('ws-input-name');
     const roleInput = document.getElementById('ws-input-role');
     const typeInput = document.getElementById('ws-input-type');
     const nameError = document.getElementById('ws-error-name');
+    const generalError = document.getElementById('ws-form-error-alert');
+    const submitBtn = document.getElementById('btn-submit-workspace');
+    const submitText = document.getElementById('ws-submit-text');
 
     if (!modal) return;
 
@@ -103,22 +289,49 @@ class ModalController {
         nameError.style.display = 'none';
         nameError.textContent = 'Please enter a workspace name.';
       }
+      if (generalError) {
+        generalError.style.display = 'none';
+        generalError.textContent = 'Unable to create your workspace. Please try again.';
+      }
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('loading');
+      }
+      if (submitText) {
+        submitText.textContent = 'CREATE WORKSPACE';
+      }
+    };
+
+    const openWorkspaceModalDirectly = () => {
+      resetModalState();
+      const current = workspaceService.getWorkspace();
+      if (nameInput) {
+        nameInput.value = current?.name || '';
+      }
+      if (roleInput && current?.role) roleInput.value = current.role;
+      if (typeInput && (current?.projectType || current?.project_type)) {
+        typeInput.value = current.projectType || current.project_type;
+      }
+      this.openModal(modal);
     };
 
     openBtns.forEach((btn) => {
       btn.addEventListener('click', (e) => {
         e.preventDefault();
-        resetModalState();
 
-        // Prefill with current workspace or elegant defaults
-        const current = workspaceService.getWorkspace();
-        if (nameInput) {
-          nameInput.value = current.name || 'DevFlow Engineering';
+        // Check if signed in, if not prompt auth first then continue to workspace modal
+        const user = authService.getUser();
+        if (!user && !authService.isAuthenticated()) {
+          if (typeof this.openAuth === 'function') {
+            this.openAuth('signup', () => {
+              openWorkspaceModalDirectly();
+            });
+            toast.show('Please sign in or create an account to configure your workspace.', 'info', 4000);
+            return;
+          }
         }
-        if (roleInput && current.role) roleInput.value = current.role;
-        if (typeInput && current.projectType) typeInput.value = current.projectType;
 
-        this.openModal(modal);
+        openWorkspaceModalDirectly();
       });
     });
 
@@ -128,6 +341,7 @@ class ModalController {
           nameInput.classList.remove('is-invalid');
           if (nameError) nameError.style.display = 'none';
         }
+        if (generalError) generalError.style.display = 'none';
       });
     }
 
@@ -138,8 +352,10 @@ class ModalController {
     }
 
     if (form) {
-      form.addEventListener('submit', (e) => {
+      form.addEventListener('submit', async (e) => {
         e.preventDefault();
+        if (generalError) generalError.style.display = 'none';
+
         const nameVal = nameInput?.value?.trim();
         const roleVal = roleInput?.value || 'Staff Platform Engineer';
         const projectTypeVal = typeInput?.value || 'Web Application';
@@ -157,8 +373,31 @@ class ModalController {
           return;
         }
 
+        const user = authService.getUser();
+        if (!user || !user.id) {
+          if (generalError) {
+            generalError.textContent = 'Please sign in to create a workspace in Supabase.';
+            generalError.style.display = 'block';
+          }
+          if (typeof this.openAuth === 'function') {
+            this.openAuth('signin', () => {
+              openWorkspaceModalDirectly();
+            });
+          }
+          return;
+        }
+
+        // Loading state
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.classList.add('loading');
+        }
+        if (submitText) {
+          submitText.textContent = 'CREATING WORKSPACE...';
+        }
+
         try {
-          const ws = workspaceService.createWorkspace({
+          const ws = await workspaceService.createWorkspace({
             name: nameVal,
             role: roleVal,
             projectType: projectTypeVal
@@ -173,9 +412,9 @@ class ModalController {
             const summaryAvatar = document.getElementById('ws-success-avatar');
 
             if (summaryName) summaryName.textContent = ws.name;
-            if (summaryRole) summaryRole.textContent = `${ws.role} • ${ws.projectType}`;
+            if (summaryRole) summaryRole.textContent = `${ws.role} • ${ws.projectType || ws.project_type}`;
             if (summaryAvatar) {
-              const initials = ws.name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase() || 'DF';
+              const initials = ws.name.split(' ').filter(Boolean).map(w => w[0]).join('').substring(0, 2).toUpperCase() || 'DF';
               summaryAvatar.textContent = initials;
             }
 
@@ -194,10 +433,27 @@ class ModalController {
             }
           }
         } catch (err) {
-          if (nameInput) nameInput.classList.add('is-invalid');
-          if (nameError) {
-            nameError.textContent = err.message || 'Error creating workspace';
-            nameError.style.display = 'block';
+          if (generalError) {
+            generalError.textContent = err.message || 'Unable to create your workspace. Please try again.';
+            generalError.style.display = 'block';
+          }
+          if (err.message && (err.message.includes('Authentication') || err.message.includes('sign in'))) {
+            setTimeout(() => {
+              if (typeof this.openAuth === 'function') {
+                this.closeModal(modal);
+                this.openAuth('signin', () => {
+                  openWorkspaceModalDirectly();
+                });
+              }
+            }, 1200);
+          }
+        } finally {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('loading');
+          }
+          if (submitText) {
+            submitText.textContent = 'CREATE WORKSPACE';
           }
         }
       });
@@ -217,7 +473,7 @@ class ModalController {
   }
 
   // ==========================================
-  // 2. FEATURE DETAIL MODAL
+  // 3. FEATURE DETAIL MODAL
   // ==========================================
   initFeatureModals(onExploreDemo) {
     const modal = document.getElementById('feature-detail-modal');
@@ -313,21 +569,39 @@ class ModalController {
   }
 
   // ==========================================
-  // 3. PROJECT CREATION MODAL
+  // 4. PROJECT CREATION MODAL
   // ==========================================
   initProjectModal() {
     const modal = document.getElementById('project-modal');
     const form = document.getElementById('project-form');
-    const openBtns = document.querySelectorAll('.open-new-project-btn');
     const closeBtn = document.getElementById('project-modal-close-btn');
+    const submitBtn = document.getElementById('btn-submit-project');
 
     if (!modal) return;
 
-    openBtns.forEach((btn) => {
-      btn.addEventListener('click', (e) => {
+    document.addEventListener('click', (e) => {
+      const target = e.target.closest('.open-new-project-btn');
+      if (target) {
         e.preventDefault();
+        const user = authService.getUser();
+        if (!user || !user.id) {
+          toast.show('Please sign in to create projects.', 'info');
+          if (typeof this.openAuth === 'function') {
+            this.openAuth('signin');
+          }
+          return;
+        }
+
+        const ws = workspaceService.getWorkspace();
+        if (!ws || !ws.id) {
+          toast.show('Please create a workspace first before adding projects.', 'info');
+          const wsModal = document.getElementById('workspace-modal');
+          if (wsModal) this.openModal(wsModal);
+          return;
+        }
+
         this.openModal(modal);
-      });
+      }
     });
 
     if (closeBtn) {
@@ -335,16 +609,34 @@ class ModalController {
     }
 
     if (form) {
-      form.addEventListener('submit', (e) => {
+      form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const nameInput = document.getElementById('proj-input-name');
         const descInput = document.getElementById('proj-input-desc');
         const statusInput = document.getElementById('proj-input-status');
         const catInput = document.getElementById('proj-input-cat');
 
+        const trimmedName = nameInput?.value?.trim();
+        if (!trimmedName) {
+          toast.show('Please enter a project name', 'error');
+          nameInput?.focus();
+          return;
+        }
+
+        const ws = workspaceService.getWorkspace();
+        if (!ws || !ws.id) {
+          toast.show('Active workspace required to create a project.', 'error');
+          return;
+        }
+
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'CREATING PROJECT...';
+        }
+
         try {
-          const newProj = projectService.addProject({
-            name: nameInput?.value,
+          const newProj = await projectService.createProject(ws.id, {
+            name: trimmedName,
             description: descInput?.value,
             status: statusInput?.value || 'Active',
             category: catInput?.value || 'Productivity'
@@ -352,40 +644,68 @@ class ModalController {
 
           form.reset();
           this.closeModal(modal);
-          toast.show(`Project "${newProj.name}" created successfully!`, 'success');
+          toast.show(`Project "${newProj.name}" created in Supabase!`, 'success');
         } catch (err) {
           toast.show(err.message || 'Error creating project', 'error');
+        } finally {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Create Project';
+          }
         }
       });
     }
   }
 
   // ==========================================
-  // 4. TASK CREATION MODAL
+  // 5. TASK CREATION MODAL
   // ==========================================
   initTaskModal() {
     const modal = document.getElementById('task-modal');
     const form = document.getElementById('task-form');
-    const openBtns = document.querySelectorAll('.open-new-task-btn');
     const closeBtn = document.getElementById('task-modal-close-btn');
     const projectSelect = document.getElementById('task-input-project');
+    const submitBtn = document.getElementById('btn-submit-task');
 
     if (!modal) return;
 
-    const populateProjects = () => {
+    const populateProjects = (selectedProjectId = null) => {
       if (!projectSelect) return;
       const projects = projectService.getProjects();
+      if (projects.length === 0) {
+        projectSelect.innerHTML = '<option value="">No projects available (Create a project first)</option>';
+        return;
+      }
       projectSelect.innerHTML = projects.map((p) => `
-        <option value="${p.id}">${escapeHtml(p.name)}</option>
+        <option value="${p.id}" ${p.id === selectedProjectId ? 'selected' : ''}>${escapeHtml(p.name)}</option>
       `).join('');
     };
 
-    openBtns.forEach((btn) => {
-      btn.addEventListener('click', (e) => {
+    document.addEventListener('click', (e) => {
+      const target = e.target.closest('.open-new-task-btn');
+      if (target) {
         e.preventDefault();
-        populateProjects();
+        const user = authService.getUser();
+        if (!user || !user.id) {
+          toast.show('Please sign in to add tasks.', 'info');
+          if (typeof this.openAuth === 'function') {
+            this.openAuth('signin');
+          }
+          return;
+        }
+
+        const projects = projectService.getProjects();
+        if (projects.length === 0) {
+          toast.show('Please create a project first before adding tasks.', 'info');
+          const projModal = document.getElementById('project-modal');
+          if (projModal) this.openModal(projModal);
+          return;
+        }
+
+        const preferredProjectId = target.getAttribute('data-project-id');
+        populateProjects(preferredProjectId);
         this.openModal(modal);
-      });
+      }
     });
 
     if (closeBtn) {
@@ -393,7 +713,7 @@ class ModalController {
     }
 
     if (form) {
-      form.addEventListener('submit', (e) => {
+      form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const titleInput = document.getElementById('task-input-title');
         const projSelect = document.getElementById('task-input-project');
@@ -401,9 +721,26 @@ class ModalController {
         const statusSelect = document.getElementById('task-input-status');
         const dueDateInput = document.getElementById('task-input-due');
 
+        const trimmedTitle = titleInput?.value?.trim();
+        if (!trimmedTitle) {
+          toast.show('Please enter a task title', 'error');
+          titleInput?.focus();
+          return;
+        }
+
+        if (!projSelect?.value) {
+          toast.show('Please create or select a project first', 'error');
+          return;
+        }
+
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'ADDING TASK...';
+        }
+
         try {
-          const newTask = taskService.addTask({
-            title: titleInput?.value,
+          const newTask = await taskService.createTask({
+            title: trimmedTitle,
             projectId: projSelect?.value,
             priority: prioritySelect?.value || 'Medium',
             status: statusSelect?.value || 'Todo',
@@ -415,13 +752,18 @@ class ModalController {
           toast.show(`Task "${newTask.title}" added to ${newTask.projectName}!`, 'success');
         } catch (err) {
           toast.show(err.message || 'Error adding task', 'error');
+        } finally {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Add Task';
+          }
         }
       });
     }
   }
 
   // ==========================================
-  // 5. DOCS MODAL
+  // 6. DOCS MODAL
   // ==========================================
   initDocsModal() {
     const modal = document.getElementById('docs-modal');
@@ -467,13 +809,14 @@ class ModalController {
   }
 
   // ==========================================
-  // 6. CONTACT US MODAL
+  // 7. CONTACT US MODAL
   // ==========================================
   initContactModal() {
     const modal = document.getElementById('contact-modal');
     const openBtns = document.querySelectorAll('.btn-header-contact, .open-contact-btn');
     const closeBtn = document.getElementById('modal-close-btn');
     const form = document.getElementById('contact-form');
+    const submitBtn = document.getElementById('btn-submit-contact');
 
     if (!modal) return;
 
@@ -489,15 +832,20 @@ class ModalController {
     }
 
     if (form) {
-      form.addEventListener('submit', (e) => {
+      form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const nameInput = form.querySelector('input[type="text"]:first-of-type');
         const emailInput = form.querySelector('input[type="email"]');
         const msgInput = form.querySelector('textarea') || form.querySelector('input[name="message"]');
         const companyInput = form.querySelector('input[placeholder*="Company"]');
 
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'SENDING...';
+        }
+
         try {
-          contactService.submitContactMessage({
+          await contactService.submitContactMessage({
             name: nameInput?.value,
             email: emailInput?.value,
             message: msgInput?.value || 'Requesting developer platform demo & architectural overview.',
@@ -506,9 +854,14 @@ class ModalController {
 
           form.reset();
           this.closeModal(modal);
-          toast.show('Message sent successfully! Our engineering team will contact you shortly.', 'success', 4500);
+          toast.show('Message recorded! Our team will contact you shortly.', 'success', 4500);
         } catch (err) {
           toast.show(err.message || 'Please check your contact details', 'error');
+        } finally {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Send Message';
+          }
         }
       });
     }
@@ -517,10 +870,11 @@ class ModalController {
 
 function escapeHtml(str) {
   if (!str) return '';
-  return String(str).replace(/&/g, '&amp;')
-                    .replace(/</g, '&lt;')
-                    .replace(/>/g, '&gt;')
-                    .replace(/"/g, '&quot;');
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 export const modals = new ModalController();

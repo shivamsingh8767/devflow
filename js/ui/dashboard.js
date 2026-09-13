@@ -1,11 +1,12 @@
 /**
- * DEVFLOW — Interactive Demo Dashboard Controller
- * Provides a functional, state-driven developer productivity workspace demo.
+ * DEVFLOW — Interactive Workspace Dashboard Controller
+ * Fully integrated with Supabase data layer (Workspaces, Projects, Tasks).
  */
 
 import { workspaceService } from '../services/workspaceService.js';
 import { projectService } from '../services/projectService.js';
 import { taskService } from '../services/taskService.js';
+import { authService } from '../services/authService.js';
 import { toast } from './toast.js';
 
 class DashboardController {
@@ -17,14 +18,26 @@ class DashboardController {
     this.isVisible = false;
   }
 
-  init() {
+  async init() {
     this.container = document.getElementById('devflow-interactive-dashboard');
     if (!this.container) return;
 
-    // Subscriptions
-    workspaceService.subscribe(() => this.render());
-    projectService.subscribe(() => this.render());
-    taskService.subscribe(() => this.render());
+    // Subscriptions to Reactive Services
+    workspaceService.subscribe((_ws, _workspaces, state) => {
+      this.render(state);
+    });
+
+    projectService.subscribe((_projects, state) => {
+      this.render(state);
+    });
+
+    taskService.subscribe((_tasks, _stats, state) => {
+      this.render(state);
+    });
+
+    authService.subscribe((_user) => {
+      this.render();
+    });
 
     // Navigation & Tab Switching
     const tabBtns = this.container.querySelectorAll('.dash-nav-btn');
@@ -64,7 +77,6 @@ class DashboardController {
     this.container.classList.add('active');
     this.container.scrollIntoView({ behavior: 'smooth', block: 'start' });
     this.render();
-    toast.show('⚡ DevFlow Interactive Workspace loaded. Try creating a project or task!', 'info', 4000);
   }
 
   hide() {
@@ -86,26 +98,50 @@ class DashboardController {
     this.renderTabContent();
   }
 
-  render() {
+  render(state = {}) {
     if (!this.container) return;
     const ws = workspaceService.getWorkspace();
-    const stats = taskService.getStats();
 
     // Render Workspace Title & Role in Dashboard Header/Sidebar
     const wsNameEl = this.container.querySelector('.dash-ws-name');
     const wsRoleEl = this.container.querySelector('.dash-ws-role');
     const wsBadgeEl = this.container.querySelector('.dash-ws-badge');
+    const wsAvatarEl = this.container.querySelector('.dash-ws-avatar');
 
-    if (wsNameEl) wsNameEl.textContent = ws.name || 'DevFlow Workspace';
-    if (wsRoleEl) wsRoleEl.textContent = `${ws.role || 'Staff Engineer'} • ${ws.projectType || 'Fullstack'}`;
-    if (wsBadgeEl) wsBadgeEl.textContent = ws.name || 'Active Workspace';
+    const displayName = ws?.name || 'DevFlow Workspace';
+    const displayRole = ws ? `${ws.role || 'Platform Engineer'} • ${ws.projectType || ws.project_type || 'Cloud Platform'}` : 'Configure Workspace';
 
-    this.renderTabContent();
+    if (wsNameEl) wsNameEl.textContent = displayName;
+    if (wsRoleEl) wsRoleEl.textContent = displayRole;
+    if (wsBadgeEl) wsBadgeEl.textContent = displayName;
+    if (wsAvatarEl) {
+      const initials = displayName
+        .split(' ')
+        .filter(Boolean)
+        .map((w) => w[0])
+        .join('')
+        .substring(0, 2)
+        .toUpperCase() || 'DF';
+      wsAvatarEl.textContent = initials;
+    }
+
+    this.renderTabContent(state);
   }
 
-  renderTabContent() {
+  renderTabContent(state = {}) {
     const mainContent = this.container.querySelector('.dash-main-viewport');
     if (!mainContent) return;
+
+    if (state.isLoading) {
+      mainContent.innerHTML = this.getLoadingSkeletonHtml();
+      return;
+    }
+
+    if (state.error) {
+      mainContent.innerHTML = this.getErrorHtml(state.error);
+      this.bindErrorEvents();
+      return;
+    }
 
     if (this.currentTab === 'overview') {
       mainContent.innerHTML = this.getOverviewHtml();
@@ -118,6 +154,47 @@ class DashboardController {
       this.bindTasksEvents();
     } else if (this.currentTab === 'analytics') {
       mainContent.innerHTML = this.getAnalyticsHtml();
+    }
+  }
+
+  getLoadingSkeletonHtml() {
+    return `
+      <div class="dash-loading-state" role="status" aria-label="Loading workspace data">
+        <div class="dash-metrics-grid">
+          <div class="dash-metric-card skeleton-card"></div>
+          <div class="dash-metric-card skeleton-card"></div>
+          <div class="dash-metric-card skeleton-card"></div>
+          <div class="dash-metric-card skeleton-card"></div>
+        </div>
+        <div class="dash-split-grid" style="margin-top: 1.25rem;">
+          <div class="dash-panel-box skeleton-box" style="height: 280px;"></div>
+          <div class="dash-panel-box skeleton-box" style="height: 280px;"></div>
+        </div>
+      </div>
+    `;
+  }
+
+  getErrorHtml(errorMsg) {
+    return `
+      <div class="dash-panel-box full-width" style="text-align: center; padding: 3rem 1.5rem;">
+        <div style="font-size: 2rem; margin-bottom: 1rem;">⚠️</div>
+        <h3 class="dash-panel-title" style="margin-bottom: 0.5rem;">Something went wrong while loading your workspace.</h3>
+        <p class="dash-panel-sub" style="margin-bottom: 1.5rem; max-width: 460px; margin-left: auto; margin-right: auto;">
+          ${escapeHtml(errorMsg || 'Please verify your network connection and database synchronization.')}
+        </p>
+        <button class="dash-btn-primary btn-retry-fetch" style="margin: 0 auto;">
+          <span>Try Again</span>
+        </button>
+      </div>
+    `;
+  }
+
+  bindErrorEvents() {
+    const retryBtn = this.container.querySelector('.btn-retry-fetch');
+    if (retryBtn) {
+      retryBtn.addEventListener('click', () => {
+        workspaceService.fetchWorkspaces();
+      });
     }
   }
 
@@ -190,27 +267,39 @@ class DashboardController {
             </div>
             <button class="dash-btn-primary open-new-project-btn" aria-label="Create new project">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-              <span>New Project</span>
+              <span>+ New Project</span>
             </button>
           </div>
 
           <div class="dash-projects-list">
-            ${projects.map((p) => `
-              <div class="dash-project-tile" data-project-id="${p.id}">
-                <div class="dash-proj-color-bar" style="background-color: ${p.badgeColor || '#3b82f6'};"></div>
-                <div class="dash-proj-details">
-                  <div class="dash-proj-header">
-                    <span class="dash-proj-title">${escapeHtml(p.name)}</span>
-                    <span class="dash-status-pill ${p.status.toLowerCase().replace(' ', '-')}">${p.status}</span>
-                  </div>
-                  <p class="dash-proj-desc">${escapeHtml(p.description)}</p>
-                  <div class="dash-proj-meta">
-                    <span class="dash-proj-tag">${escapeHtml(p.category || 'Engineering')}</span>
-                    <span class="dash-proj-count">${taskService.getTasksByProject(p.id).length} tasks</span>
+            ${projects.length === 0 ? `
+              <div class="dash-empty-state">
+                <div class="dash-empty-icon-wrap">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                </div>
+                <p class="dash-empty-title">No projects yet</p>
+                <p class="dash-empty-sub">Create your first repository to track architecture and issues.</p>
+                <button class="dash-btn-secondary open-new-project-btn" style="margin-top: 10px;">+ New Project</button>
+              </div>
+            ` : projects.map((p) => {
+              const pTasks = taskService.getTasksByProject(p.id);
+              return `
+                <div class="dash-project-tile" data-project-id="${p.id}">
+                  <div class="dash-proj-color-bar" style="background-color: ${p.badgeColor || '#3b82f6'};"></div>
+                  <div class="dash-proj-details">
+                    <div class="dash-proj-header">
+                      <span class="dash-proj-title">${escapeHtml(p.name)}</span>
+                      <span class="dash-status-pill ${(p.status || 'Active').toLowerCase().replace(' ', '-')}">${p.status || 'Active'}</span>
+                    </div>
+                    <p class="dash-proj-desc">${escapeHtml(p.description || 'Active repository.')}</p>
+                    <div class="dash-proj-meta">
+                      <span class="dash-proj-tag">${escapeHtml(p.category || 'Productivity')}</span>
+                      <span class="dash-proj-count">${pTasks.length} tasks</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            `).join('')}
+              `;
+            }).join('')}
           </div>
         </div>
 
@@ -223,12 +312,21 @@ class DashboardController {
             </div>
             <button class="dash-btn-primary open-new-task-btn" aria-label="Add new task">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-              <span>Add Task</span>
+              <span>+ Add Task</span>
             </button>
           </div>
 
           <div class="dash-tasks-list">
-            ${tasks.map((t) => `
+            ${tasks.length === 0 ? `
+              <div class="dash-empty-state">
+                <div class="dash-empty-icon-wrap">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                </div>
+                <p class="dash-empty-title">No tasks yet</p>
+                <p class="dash-empty-sub">Add issues and engineering tasks to monitor sprint velocity.</p>
+                <button class="dash-btn-secondary open-new-task-btn" style="margin-top: 10px;">+ Add Task</button>
+              </div>
+            ` : tasks.map((t) => `
               <div class="dash-task-item ${t.status === 'Completed' ? 'completed' : ''}" data-task-id="${t.id}">
                 <button class="dash-task-check" aria-label="Toggle task status">
                   ${t.status === 'Completed' ? `
@@ -238,9 +336,9 @@ class DashboardController {
                 <div class="dash-task-body">
                   <div class="dash-task-title">${escapeHtml(t.title)}</div>
                   <div class="dash-task-tags">
-                    <span class="dash-task-proj-badge">${escapeHtml(t.projectName)}</span>
-                    <span class="dash-priority-pill ${t.priority.toLowerCase()}">${t.priority}</span>
-                    <span class="dash-due-date">Due ${t.dueDate || 'Soon'}</span>
+                    <span class="dash-task-proj-badge">${escapeHtml(t.projectName || 'Project')}</span>
+                    <span class="dash-priority-pill ${(t.priority || 'Medium').toLowerCase()}">${t.priority || 'Medium'}</span>
+                    <span class="dash-due-date">Due ${t.dueDate || t.due_date || 'Soon'}</span>
                   </div>
                 </div>
               </div>
@@ -256,18 +354,22 @@ class DashboardController {
     // Task check toggles
     const taskChecks = this.container.querySelectorAll('.dash-task-check');
     taskChecks.forEach((btn) => {
-      btn.addEventListener('click', (e) => {
+      btn.addEventListener('click', async (e) => {
         e.stopPropagation();
         const taskItem = btn.closest('.dash-task-item');
         const taskId = taskItem?.getAttribute('data-task-id');
         if (taskId) {
-          const updated = taskService.toggleTaskComplete(taskId);
-          if (updated) {
-            if (updated.status === 'Completed') {
-              toast.show(`✓ Task "${updated.title}" marked completed!`, 'success');
-            } else {
-              toast.show(`Task "${updated.title}" moved to Todo`, 'info');
+          try {
+            const updated = await taskService.toggleTaskComplete(taskId);
+            if (updated) {
+              if (updated.status === 'Completed') {
+                toast.show(`✓ Task "${updated.title}" marked completed!`, 'success');
+              } else {
+                toast.show(`Task "${updated.title}" moved to Todo`, 'info');
+              }
             }
+          } catch (err) {
+            toast.show('Error updating task status', 'error');
           }
         }
       });
@@ -293,49 +395,60 @@ class DashboardController {
           </button>
         </div>
 
-        <div class="dash-projects-grid">
-          ${projects.map((p) => {
-            const pTasks = taskService.getTasksByProject(p.id);
-            const pCompleted = pTasks.filter((t) => t.status === 'Completed').length;
-            const pProgress = pTasks.length > 0 ? Math.round((pCompleted / pTasks.length) * 100) : 0;
+        ${projects.length === 0 ? `
+          <div class="dash-empty-state" style="padding: 3.5rem 1rem;">
+            <div class="dash-empty-icon-wrap">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+            </div>
+            <h4 class="dash-empty-title">No projects yet</h4>
+            <p class="dash-empty-sub">Get started by creating your first project in this workspace.</p>
+            <button class="dash-btn-primary open-new-project-btn" style="margin: 1rem auto 0;">+ Create Project</button>
+          </div>
+        ` : `
+          <div class="dash-projects-grid">
+            ${projects.map((p) => {
+              const pTasks = taskService.getTasksByProject(p.id);
+              const pCompleted = pTasks.filter((t) => t.status === 'Completed' || t.status === 'completed').length;
+              const pProgress = pTasks.length > 0 ? Math.round((pCompleted / pTasks.length) * 100) : 0;
 
-            return `
-              <div class="dash-proj-card">
-                <div class="dash-proj-card-top">
-                  <div class="dash-proj-avatar" style="background-color: ${p.badgeColor || '#3b82f6'};">
-                    ${escapeHtml(p.name.substring(0, 2).toUpperCase())}
+              return `
+                <div class="dash-proj-card">
+                  <div class="dash-proj-card-top">
+                    <div class="dash-proj-avatar" style="background-color: ${p.badgeColor || '#3b82f6'};">
+                      ${escapeHtml(p.name.substring(0, 2).toUpperCase())}
+                    </div>
+                    <span class="dash-status-pill ${(p.status || 'Active').toLowerCase().replace(' ', '-')}">${p.status || 'Active'}</span>
                   </div>
-                  <span class="dash-status-pill ${p.status.toLowerCase().replace(' ', '-')}">${p.status}</span>
-                </div>
-                <h4 class="dash-proj-card-title">${escapeHtml(p.name)}</h4>
-                <p class="dash-proj-card-desc">${escapeHtml(p.description)}</p>
-                
-                <div class="dash-proj-card-progress">
-                  <div class="dash-proj-prog-header">
-                    <span>Progress</span>
-                    <span>${pProgress}% (${pCompleted}/${pTasks.length})</span>
+                  <h4 class="dash-proj-card-title">${escapeHtml(p.name)}</h4>
+                  <p class="dash-proj-card-desc">${escapeHtml(p.description || 'Active repository.')}</p>
+                  
+                  <div class="dash-proj-card-progress">
+                    <div class="dash-proj-prog-header">
+                      <span>Progress</span>
+                      <span>${pProgress}% (${pCompleted}/${pTasks.length})</span>
+                    </div>
+                    <div class="dash-progress-mini-bar">
+                      <div class="dash-progress-fill" style="width: ${pProgress}%;"></div>
+                    </div>
                   </div>
-                  <div class="dash-progress-mini-bar">
-                    <div class="dash-progress-fill" style="width: ${pProgress}%;"></div>
-                  </div>
-                </div>
 
-                <div class="dash-proj-card-footer">
-                  <span class="dash-proj-tag">${escapeHtml(p.category || 'Core')}</span>
-                  <button class="dash-link-action open-new-task-btn" title="Add task to this project">
-                    + Add Task
-                  </button>
+                  <div class="dash-proj-card-footer">
+                    <span class="dash-proj-tag">${escapeHtml(p.category || 'Productivity')}</span>
+                    <button class="dash-link-action open-new-task-btn" data-project-id="${p.id}" title="Add task to this project">
+                      + Add Task
+                    </button>
+                  </div>
                 </div>
-              </div>
-            `;
-          }).join('')}
-        </div>
+              `;
+            }).join('')}
+          </div>
+        `}
       </div>
     `;
   }
 
   bindProjectsEvents() {
-    // Custom actions inside project view if needed
+    // Event bindings handled by global modal triggers
   }
 
   // ==========================================
@@ -352,6 +465,9 @@ class DashboardController {
       tasks = tasks.filter((t) => t.status === 'Completed');
     }
 
+    const allTasksCount = taskService.getTasks().length;
+    const completedCount = taskService.getStats().completedTasksCount;
+
     return `
       <div class="dash-panel-box full-width">
         <div class="dash-panel-head">
@@ -367,17 +483,21 @@ class DashboardController {
 
         <!-- Task Filter Pills -->
         <div class="dash-filter-row">
-          <button class="dash-filter-pill ${this.activeTaskFilter === 'all' ? 'active' : ''}" data-filter="all">All Tasks (${taskService.getTasks().length})</button>
+          <button class="dash-filter-pill ${this.activeTaskFilter === 'all' ? 'active' : ''}" data-filter="all">All Tasks (${allTasksCount})</button>
           <button class="dash-filter-pill ${this.activeTaskFilter === 'todo' ? 'active' : ''}" data-filter="todo">To Do</button>
           <button class="dash-filter-pill ${this.activeTaskFilter === 'in-progress' ? 'active' : ''}" data-filter="in-progress">In Progress</button>
-          <button class="dash-filter-pill ${this.activeTaskFilter === 'completed' ? 'active' : ''}" data-filter="completed">Completed (${taskService.getStats().completedTasksCount})</button>
+          <button class="dash-filter-pill ${this.activeTaskFilter === 'completed' ? 'active' : ''}" data-filter="completed">Completed (${completedCount})</button>
         </div>
 
         <div class="dash-tasks-table">
           ${tasks.length === 0 ? `
             <div class="dash-empty-state">
-              <p>No tasks match this filter.</p>
-              <button class="dash-btn-secondary open-new-task-btn">+ Create First Task</button>
+              <div class="dash-empty-icon-wrap">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+              </div>
+              <p class="dash-empty-title">No tasks yet.</p>
+              <p class="dash-empty-sub">Create your first task to track progress and sprint velocity.</p>
+              <button class="dash-btn-secondary open-new-task-btn" style="margin-top: 10px;">+ Add Task</button>
             </div>
           ` : tasks.map((t) => `
             <div class="dash-task-row ${t.status === 'Completed' ? 'completed' : ''}" data-task-id="${t.id}">
@@ -390,16 +510,16 @@ class DashboardController {
                 <span class="dash-task-name">${escapeHtml(t.title)}</span>
               </div>
               <div class="dash-task-col-proj">
-                <span class="dash-task-proj-badge">${escapeHtml(t.projectName)}</span>
+                <span class="dash-task-proj-badge">${escapeHtml(t.projectName || 'Project')}</span>
               </div>
               <div class="dash-task-col-priority">
-                <span class="dash-priority-pill ${t.priority.toLowerCase()}">${t.priority}</span>
+                <span class="dash-priority-pill ${(t.priority || 'Medium').toLowerCase()}">${t.priority || 'Medium'}</span>
               </div>
               <div class="dash-task-col-status">
-                <span class="dash-status-pill ${t.status.toLowerCase().replace(' ', '-')}">${t.status}</span>
+                <span class="dash-status-pill ${(t.status || 'Todo').toLowerCase().replace(' ', '-')}">${t.status || 'Todo'}</span>
               </div>
               <div class="dash-task-col-due">
-                <span>${t.dueDate || '—'}</span>
+                <span>${t.dueDate || t.due_date || '—'}</span>
               </div>
             </div>
           `).join('')}
@@ -421,19 +541,22 @@ class DashboardController {
     // Checkbox completions
     const checks = this.container.querySelectorAll('.dash-task-check');
     checks.forEach((btn) => {
-      btn.addEventListener('click', (e) => {
+      btn.addEventListener('click', async (e) => {
         e.stopPropagation();
         const row = btn.closest('[data-task-id]');
         const taskId = row?.getAttribute('data-task-id');
         if (taskId) {
-          const updated = taskService.toggleTaskComplete(taskId);
-          if (updated) {
-            if (updated.status === 'Completed') {
-              toast.show(`✓ "${updated.title}" marked completed!`, 'success');
-            } else {
-              toast.show(`"${updated.title}" moved to Todo`, 'info');
+          try {
+            const updated = await taskService.toggleTaskComplete(taskId);
+            if (updated) {
+              if (updated.status === 'Completed') {
+                toast.show(`✓ "${updated.title}" marked completed!`, 'success');
+              } else {
+                toast.show(`"${updated.title}" moved to Todo`, 'info');
+              }
             }
-            this.renderTabContent();
+          } catch (err) {
+            toast.show('Error updating task', 'error');
           }
         }
       });
@@ -516,10 +639,11 @@ class DashboardController {
 
 function escapeHtml(str) {
   if (!str) return '';
-  return String(str).replace(/&/g, '&amp;')
-                    .replace(/</g, '&lt;')
-                    .replace(/>/g, '&gt;')
-                    .replace(/"/g, '&quot;');
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 export const dashboard = new DashboardController();

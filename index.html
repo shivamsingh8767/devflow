@@ -48,6 +48,8 @@
 
         <!-- Mobile-Only Drawer Actions -->
         <div class="mobile-actions">
+          <button class="btn-header-auth open-auth-btn" id="btn-mobile-signin">Sign In</button>
+          <button class="btn-header-auth" id="btn-mobile-signout" style="display: none;">Sign Out</button>
           <button class="btn-header-contact open-workspace-modal-btn" id="btn-mobile-get-started">Get Started</button>
           <button class="btn-header-contact open-contact-btn" id="btn-mobile-contact">Contact Us</button>
         </div>
@@ -55,6 +57,14 @@
 
       <!-- Right Header Actions -->
       <div class="header-actions">
+        <button class="btn-header-auth open-auth-btn" id="btn-header-signin">Sign In</button>
+        <div class="header-user-profile" id="header-user-profile" style="display: none;">
+          <div class="header-user-avatar" id="header-user-avatar">DF</div>
+          <span class="header-user-email" id="header-user-email">user@devflow.io</span>
+          <button class="btn-header-signout" id="btn-header-signout" title="Sign Out">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+          </button>
+        </div>
         <button class="launch-demo-btn btn-header-demo" id="btn-header-live-demo">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <polygon points="5 3 19 12 5 21 5 3"></polygon>
@@ -813,8 +823,12 @@
             <div class="form-error-msg" id="ws-error-type" role="alert">Please select a project type.</div>
           </div>
 
+          <div class="auth-error-alert" id="ws-form-error-alert" style="display: none; margin-bottom: 1rem;">
+            Unable to create your workspace. Please try again.
+          </div>
+
           <button type="submit" class="btn-modal-submit btn-ws-submit" id="btn-submit-workspace">
-            <span>CREATE WORKSPACE</span>
+            <span id="ws-submit-text">CREATE WORKSPACE</span>
             <svg class="btn-arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <line x1="5" y1="12" x2="19" y2="12"></line>
               <polyline points="12 5 19 12 12 19"></polyline>
@@ -1058,6 +1072,63 @@
         <input type="text" class="form-input" placeholder="Company / Team Name (optional)">
         <textarea class="form-input form-textarea" name="message" placeholder="How can DevFlow help your engineering team?" rows="3" required></textarea>
         <button type="submit" class="btn-modal-submit" id="btn-submit-contact">Send Message</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 7. Authentication Modal (Sign In / Sign Up) -->
+  <div class="contact-modal-overlay modal-backdrop" id="auth-modal" aria-hidden="true">
+    <div class="contact-modal-card auth-modal-card" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+      <button class="modal-close-btn" id="auth-modal-close-btn" aria-label="Close modal">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab-btn active" id="auth-tab-signin">Sign In</button>
+        <button type="button" class="auth-tab-btn" id="auth-tab-signup">Create Account</button>
+      </div>
+
+      <div class="modal-header-block" style="margin-top: 1.25rem;">
+        <span class="modal-kicker">SUPABASE AUTHENTICATION</span>
+        <h3 class="modal-title" id="auth-modal-title">Sign in to DevFlow</h3>
+        <p class="modal-desc" id="auth-modal-desc">Access your persistent workspaces, build telemetry, and real-time pipelines.</p>
+      </div>
+
+      <div class="auth-error-alert" id="auth-error-alert" style="display: none;" role="alert"></div>
+
+      <form class="modal-form" id="auth-form" novalidate>
+        <div class="form-group" id="auth-group-name" style="display: none;">
+          <label class="form-label" for="auth-input-name">Full Name</label>
+          <input type="text" class="form-input" id="auth-input-name" placeholder="Alex Rivera" autocomplete="name">
+        </div>
+
+        <div class="form-group" id="auth-group-email">
+          <label class="form-label" for="auth-input-email">Work Email</label>
+          <input type="email" class="form-input" id="auth-input-email" placeholder="alex@company.com" autocomplete="email" required>
+        </div>
+
+        <div class="form-group" id="auth-group-password">
+          <label class="form-label" for="auth-input-password">Password</label>
+          <input type="password" class="form-input" id="auth-input-password" placeholder="••••••••" autocomplete="current-password" required minlength="6">
+        </div>
+
+        <div class="form-group" id="auth-group-confirm-password" style="display: none;">
+          <label class="form-label" for="auth-input-confirm-password">Confirm Password</label>
+          <input type="password" class="form-input" id="auth-input-confirm-password" placeholder="••••••••" autocomplete="new-password" minlength="6">
+        </div>
+
+        <button type="submit" class="btn-modal-submit btn-ws-submit" id="btn-submit-auth">
+          <span id="auth-submit-text">SIGN IN</span>
+          <svg class="btn-arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+
+        <div class="auth-toggle-footer" id="auth-toggle-footer">
+          <span id="auth-toggle-prompt">Don't have an account?</span>
+          <button type="button" class="auth-toggle-link" id="auth-toggle-link">Create Account</button>
+        </div>
       </form>
     </div>
   </div>
