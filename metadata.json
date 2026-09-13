@@ -1,0 +1,6 @@
+{
+  "name": "DevFlow - Developer Productivity Platform",
+  "description": "A high-end, premium developer productivity platform landing page with architectural design aesthetics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

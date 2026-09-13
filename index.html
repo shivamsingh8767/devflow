@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevFlow - Developer Productivity Platform</title>
+  <meta name="description" content="DevFlow is a premium developer productivity platform with architectural design aesthetics, high-velocity workflows, and modern cloud ergonomics.">
+  
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="DevFlow - Developer Productivity Platform">
+  <meta property="og:description" content="DevFlow is a premium developer productivity platform with architectural design aesthetics, high-velocity workflows, and modern cloud ergonomics.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Core Pure Stylesheet -->
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <!-- =========================================================================
+       1. HEADER & NAVIGATION (Overlay / Transparent Header)
+       ========================================================================= -->
+  <header class="site-header" id="main-header">
+    <div class="header-container">
+      
+      <!-- Brand Logo / Wordmark -->
+      <a href="#hero" class="brand-logo" id="header-brand-logo" aria-label="DevFlow Homepage">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 4h7v7H4V4z" fill="currentColor"/>
+            <path d="M13 4h7v7h-7V4z" fill="currentColor" opacity="0.6"/>
+            <path d="M4 13h7v7H4v-7z" fill="currentColor" opacity="0.6"/>
+            <path d="M13 13h7v7h-7v-7z" fill="currentColor"/>
+          </svg>
+        </div>
+        <span class="brand-name">DEVFLOW</span>
+      </a>
+
+      <!-- Center Navigation Links -->
+      <nav class="main-nav" id="site-navigation" aria-label="Main Navigation">
+        <ul class="nav-list">
+          <li><a href="#features" class="nav-link" id="nav-link-services">Services</a></li>
+          <li><a href="#workflow" class="nav-link" id="nav-link-workflow">Workflow</a></li>
+          <li><a href="#architecture" class="nav-link" id="nav-link-architecture">Architecture</a></li>
+          <li><a href="#stats" class="nav-link" id="nav-link-cases">Cases</a></li>
+          <li><button class="nav-link open-docs-btn" id="nav-link-docs">Docs</button></li>
+        </ul>
+
+        <!-- Mobile-Only Drawer Actions -->
+        <div class="mobile-actions">
+          <button class="btn-header-contact open-workspace-modal-btn" id="btn-mobile-get-started">Get Started</button>
+          <button class="btn-header-contact open-contact-btn" id="btn-mobile-contact">Contact Us</button>
+        </div>
+      </nav>
+
+      <!-- Right Header Actions -->
+      <div class="header-actions">
+        <button class="launch-demo-btn btn-header-demo" id="btn-header-live-demo">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          <span>Live Demo</span>
+        </button>
+        <button class="btn-header-contact open-contact-btn" id="btn-desktop-contact">Contact Us</button>
+      </div>
+
+      <!-- Hamburger Menu Toggle (Mobile) -->
+      <button class="mobile-menu-btn" id="mobile-menu-toggle" aria-label="Toggle Navigation Menu">
+        <span class="menu-bar"></span>
+        <span class="menu-bar"></span>
+        <span class="menu-bar"></span>
+      </button>
+
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       2. HERO SECTION & BACKGROUND (Cinematic Architectural Composition)
+       ========================================================================= -->
+  <section class="hero-section" id="hero">
+    
+    <!-- Atmospheric Scenic Background Canvas -->
+    <div class="hero-bg-canvas" aria-hidden="true">
+      <div class="bg-sky"></div>
+      
+      <!-- Mountain Range Silhouette SVG -->
+      <div class="bg-mountains">
+        <svg viewBox="0 0 1440 400" preserveAspectRatio="none" style="width: 100%; height: 100%;" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Far Mountain Layer -->
+          <path d="M0 240L140 180L290 230L460 140L620 200L780 120L950 190L1120 130L1290 210L1440 160V400H0V240Z" fill="#938a7e" fill-opacity="0.45"/>
+          <!-- Middle Mountain Layer -->
+          <path d="M0 280L180 200L380 260L540 170L710 230L890 150L1080 230L1260 170L1440 220V400H0V280Z" fill="#6f675c" fill-opacity="0.6"/>
+          <!-- Near Mountain Peaks -->
+          <path d="M0 320L220 240L440 300L640 210L850 280L1040 200L1240 270L1440 230V400H0V320Z" fill="#4d463d" fill-opacity="0.75"/>
+        </svg>
+      </div>
+
+      <!-- Dark Rich Ground/Terrain -->
+      <div class="bg-terrain"></div>
+    </div>
+
+    <!-- Main Hero Content Container (Desktop 2-Column Grid) -->
+    <div class="hero-main-container">
+      <div class="hero-grid">
+        
+        <!-- Left Hero Column: Bold Editorial Typography -->
+        <div class="hero-text-block">
+          <div class="hero-eyebrow">
+            <span class="eyebrow-dot"></span>
+            <span>Developer Productivity Platform</span>
+          </div>
+
+          <h1 class="hero-title" id="hero-main-title">
+            <span class="title-line">The</span>
+            <span class="title-line">Perfect</span>
+            <span class="title-line">Flow<span class="title-reg">®</span></span>
+          </h1>
+
+          <p class="hero-subtext-bar">/ We craft custom developer platforms with high-velocity cloud ergonomics /</p>
+
+          <div class="hero-cta-group">
+            <button class="btn-hero-start open-workspace-modal-btn" id="btn-hero-start">
+              <span>Get Started</span>
+            </button>
+            <button class="btn-hero-demo launch-demo-btn" id="btn-hero-demo">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+              <span>View Live Demo</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Right Hero Column: Large Architectural Floating Panel Mockup -->
+        <div class="hero-visual-block" id="architecture">
+          <div class="floating-panel-card" id="hero-panel-card">
+            
+            <!-- Panel Tag Pills -->
+            <div class="panel-tags-row">
+              <button class="pill-tag active" data-target="architecture">Architecture</button>
+              <button class="pill-tag" data-target="performance">Design</button>
+              <button class="pill-tag" data-target="cloud">3D Cloud</button>
+            </div>
+
+            <!-- Panel Content Title & Subtitle -->
+            <h2 class="panel-headline">Unique architecture &amp; ergonomics</h2>
+            <p class="panel-subline">From local commits to multi-region cloud edge.</p>
+
+            <!-- Inner Visual Canvas Box (Architectural Modern House / Cloud Node) -->
+            <div class="panel-preview-box">
+              <div class="mockup-visual-wrapper">
+                
+                <!-- Modern Architectural Villa / Dev House Illustration -->
+                <div class="iso-building-mesh">
+                  <svg viewBox="0 0 500 300" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;">
+                    <defs>
+                      <linearGradient id="wallWood" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#bfa286" />
+                        <stop offset="50%" stop-color="#a88b71" />
+                        <stop offset="100%" stop-color="#93755c" />
+                      </linearGradient>
+                      <linearGradient id="glassGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#ffe8cc" stop-opacity="0.9" />
+                        <stop offset="50%" stop-color="#f59e0b" stop-opacity="0.75" />
+                        <stop offset="100%" stop-color="#d97706" stop-opacity="0.85" />
+                      </linearGradient>
+                      <linearGradient id="concreteDark" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stop-color="#2d3440" />
+                        <stop offset="100%" stop-color="#191e26" />
+                      </linearGradient>
+                    </defs>
+
+                    <!-- Base Platform & Shadow -->
+                    <ellipse cx="260" cy="275" rx="200" ry="20" fill="#07090d" fill-opacity="0.7"/>
+
+                    <!-- Lower Floor Concrete Structure -->
+                    <path d="M120 180 L350 160 L430 190 L430 260 L200 270 L120 260 Z" fill="#e2ded7"/>
+                    
+                    <!-- Warm Glowing Ground Glass Window -->
+                    <polygon points="135,190 270,175 270,250 135,250" fill="url(#glassGlow)" />
+                    <line x1="200" y1="183" x2="200" y2="250" stroke="#111" stroke-width="2"/>
+                    <line x1="135" y1="218" x2="270" y2="218" stroke="#111" stroke-width="2"/>
+
+                    <!-- Upper Slanted Modern Pavilion (Wood Siding) -->
+                    <path d="M100 130 C130 110, 240 100, 380 120 L440 140 L440 210 L140 210 Z" fill="url(#wallWood)" />
+                    
+                    <!-- Modern Overhang Dark Roof -->
+                    <path d="M80 130 C130 100, 240 90, 390 110 L450 130 L440 145 C380 125, 230 115, 90 142 Z" fill="url(#concreteDark)"/>
+                    
+                    <!-- Upper Floor Balcony & Window -->
+                    <polygon points="340,145 425,155 425,195 340,195" fill="url(#glassGlow)" />
+                    <line x1="380" y1="150" x2="380" y2="195" stroke="#111" stroke-width="2"/>
+                    
+                    <!-- Slatted Wood Lines Pattern -->
+                    <line x1="170" y1="120" x2="170" y2="210" stroke="#84664e" stroke-width="1.5" opacity="0.6"/>
+                    <line x1="200" y1="116" x2="200" y2="210" stroke="#84664e" stroke-width="1.5" opacity="0.6"/>
+                    <line x1="230" y1="114" x2="230" y2="210" stroke="#84664e" stroke-width="1.5" opacity="0.6"/>
+                    <line x1="260" y1="114" x2="260" y2="210" stroke="#84664e" stroke-width="1.5" opacity="0.6"/>
+                    <line x1="290" y1="116" x2="290" y2="210" stroke="#84664e" stroke-width="1.5" opacity="0.6"/>
+                    <line x1="320" y1="118" x2="320" y2="210" stroke="#84664e" stroke-width="1.5" opacity="0.6"/>
+                  </svg>
+                </div>
+
+                <!-- Interactive Hotspot Pin on the Architecture -->
+                <button class="panel-hotspot-pin" id="panel-hotspot-pin" aria-label="View Deployment Node Information"></button>
+
+                <!-- Floating Overlapping Badge: Roomtour / Live Preview -->
+                <div class="floating-callout-badge" id="floating-callout-badge">
+                  <span class="callout-header">ROOMTOUR</span>
+                  <div class="callout-body">
+                    <button class="callout-play-btn launch-demo-btn" aria-label="Play Live Tour Video">
+                      <svg viewBox="0 0 24 24">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                      </svg>
+                    </button>
+                    <div class="callout-thumb launch-demo-btn" style="cursor: pointer;">
+                      <svg viewBox="0 0 60 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="60" height="40" fill="#1c212b"/>
+                        <rect x="8" y="10" width="44" height="20" rx="3" fill="#3b4455"/>
+                        <circle cx="30" cy="20" r="5" fill="#f59e0b"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- =========================================================================
+         4. SECONDARY FLOATING CARDS & BOTTOM HERO ROW
+         ========================================================================= -->
+    <div class="hero-bottom-bar">
+      <div class="hero-bottom-grid">
+        
+        <!-- Left: Mocha Warm Architectural Floating Card -->
+        <div class="mocha-feature-card" id="mocha-card">
+          <div class="mocha-card-info">
+            <h3 class="mocha-title">We use best materials!</h3>
+            <p class="mocha-subtitle">Working with verified cloud providers &amp; edge runtimes.</p>
+          </div>
+          <div class="mocha-card-graphic">
+            <!-- 3D Isometric Cutaway Layers Graphic -->
+            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;">
+              <g transform="translate(10, 10)">
+                <polygon points="10,20 40,5 75,22 75,65 45,80 10,65" fill="#9e826e" opacity="0.4"/>
+                <polygon points="15,25 42,12 70,26 70,62 43,74 15,62" fill="#d4c0a5"/>
+                <path d="M25 32 L44 23 L62 33 L62 58 L44 68 L25 58 Z" fill="#b59074"/>
+                <line x1="35" y1="28" x2="35" y2="63" stroke="#684a34" stroke-width="2"/>
+                <line x1="52" y1="28" x2="52" y2="63" stroke="#684a34" stroke-width="2"/>
+                <polygon points="45,74 70,62 70,70 45,82" fill="#7a553c"/>
+                <polygon points="15,62 45,74 45,82 15,70" fill="#61412d"/>
+              </g>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Center: Stacked Customer Avatars & Big Stat -->
+        <div class="bottom-stat-block" id="bottom-stat-block">
+          <div class="avatar-stack">
+            <img class="avatar-img" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Customer avatar 1">
+            <img class="avatar-img" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80" alt="Customer avatar 2">
+            <img class="avatar-img" src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&auto=format&fit=crop&q=80" alt="Customer avatar 3">
+          </div>
+          <div class="stat-counter-wrap">
+            <span class="stat-huge-number">12m+</span>
+            <span class="stat-sublabel">Developers &amp; Users</span>
+          </div>
+        </div>
+
+        <!-- Right: Editorial Uppercase Headline & Action Link -->
+        <div class="bottom-statement-block" id="bottom-statement-block">
+          <h2 class="statement-headline">We combine ergonomics &amp; high velocity</h2>
+          <a href="#features" class="link-learn-more" id="link-learn-more">
+            <span>Explore Platform</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </a>
+        </div>
+
+      </div>
+    </div>
+
+  </section>
+
+  <!-- =========================================================================
+       3. INTERACTIVE PRODUCT DEMO DASHBOARD (Working Developer Experience)
+       ========================================================================= -->
+  <section class="section-wrapper dashboard-showcase-section" id="devflow-interactive-dashboard">
+    <div class="section-container">
+      
+      <!-- Showcase Header -->
+      <div class="dash-showcase-header">
+        <div class="dash-showcase-title-wrap">
+          <span class="section-kicker">
+            <span class="eyebrow-dot active-pulse"></span>
+            Live Product Demo
+          </span>
+          <h2 class="section-title">DevFlow Workspace</h2>
+          <p class="section-description">
+            Experience the real-time project tracker, build telemetry, and task pipeline below. Try adding a task or creating a new project.
+          </p>
+        </div>
+
+        <div class="dash-showcase-actions">
+          <button class="dash-btn-secondary open-workspace-modal-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            <span>Switch Workspace</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Interactive Dashboard Container -->
+      <div class="dash-app-window">
+        
+        <!-- Window Title Bar -->
+        <div class="dash-window-bar">
+          <div class="dash-window-dots">
+            <span class="w-dot red"></span>
+            <span class="w-dot yellow"></span>
+            <span class="w-dot green"></span>
+          </div>
+          <div class="dash-window-title">
+            <span class="dash-ws-badge">DevFlow Engineering</span>
+            <span class="dash-env-badge">DEMO CLUSTER • SUPABASE READY</span>
+          </div>
+          <div class="dash-window-quick-stats">
+            <span class="live-pulse-dot"></span>
+            <span>Edge Synced</span>
+          </div>
+        </div>
+
+        <!-- Dashboard Layout: Sidebar + Main Content -->
+        <div class="dash-app-layout">
+          
+          <!-- SIDEBAR -->
+          <aside class="dash-sidebar" aria-label="Dashboard Navigation">
+            
+            <div class="dash-sidebar-header">
+              <div class="dash-ws-avatar">DF</div>
+              <div class="dash-ws-info">
+                <span class="dash-ws-name">DevFlow Workspace</span>
+                <span class="dash-ws-role">Staff Platform Engineer</span>
+              </div>
+            </div>
+
+            <nav class="dash-sidebar-nav">
+              <button class="dash-nav-btn active" data-tab="overview">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                <span>Overview</span>
+              </button>
+
+              <button class="dash-nav-btn" data-tab="projects">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                <span>Projects</span>
+              </button>
+
+              <button class="dash-nav-btn" data-tab="tasks">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                <span>Tasks</span>
+              </button>
+
+              <button class="dash-nav-btn" data-tab="analytics">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                <span>Analytics</span>
+              </button>
+            </nav>
+
+            <div class="dash-sidebar-actions">
+              <button class="dash-sidebar-action-btn open-new-project-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <span>+ New Project</span>
+              </button>
+              <button class="dash-sidebar-action-btn open-new-task-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <span>+ Add Task</span>
+              </button>
+            </div>
+
+            <div class="dash-sidebar-footer">
+              <a href="#hero" class="dash-back-link btn-close-demo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                <span>Back to Landing Page</span>
+              </a>
+            </div>
+
+          </aside>
+
+          <!-- MAIN VIEWPORT -->
+          <main class="dash-main-viewport" role="region" aria-label="Dashboard Workspace Content">
+            <!-- Dynamically populated by js/ui/dashboard.js -->
+          </main>
+
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       5. FEATURES SECTION (Interactive Capability Cards)
+       ========================================================================= -->
+  <section class="section-wrapper features-section" id="features">
+    <div class="section-container">
+      
+      <!-- Section Header -->
+      <div class="section-header-row reveal-on-scroll">
+        <span class="section-kicker">
+          <span class="eyebrow-dot"></span>
+          Core Capabilities
+        </span>
+        <h2 class="section-title">Built for High Velocity</h2>
+        <p class="section-description">
+          Click any card to inspect technical specifications, release metrics, and live terminal pipelines.
+        </p>
+      </div>
+
+      <!-- 4-Card Features CSS Grid -->
+      <div class="features-grid">
+        
+        <!-- Feature 1: Ship Faster -->
+        <div class="feature-card reveal-on-scroll" id="feature-card-ship">
+          <div class="feature-card-top">
+            <div class="feature-icon-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+              </svg>
+            </div>
+            <h3 class="feature-title">Ship Faster</h3>
+            <p class="feature-desc">
+              Instant sub-second builds with incremental tree compilation and instant edge previews for every commit.
+            </p>
+          </div>
+          <div class="feature-card-bottom">
+            <span class="feature-tag">01 / VELOCITY</span>
+            <div class="feature-arrow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Feature 2: Collaborate -->
+        <div class="feature-card reveal-on-scroll" id="feature-card-collaborate">
+          <div class="feature-card-top">
+            <div class="feature-icon-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+            </div>
+            <h3 class="feature-title">Collaborate</h3>
+            <p class="feature-desc">
+              Real-time multi-developer sandboxes, multiplayer terminal sharing, and instant branch pair reviews.
+            </p>
+          </div>
+          <div class="feature-card-bottom">
+            <span class="feature-tag">02 / TEAMWORK</span>
+            <div class="feature-arrow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Feature 3: Track Work -->
+        <div class="feature-card reveal-on-scroll" id="feature-card-track">
+          <div class="feature-card-top">
+            <div class="feature-icon-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="20" x2="18" y2="10"></line>
+                <line x1="12" y1="20" x2="12" y2="4"></line>
+                <line x1="6" y1="20" x2="6" y2="14"></line>
+              </svg>
+            </div>
+            <h3 class="feature-title">Track Work</h3>
+            <p class="feature-desc">
+              Automated issue-to-PR tracing, continuous code health metrics, and automated change impact insights.
+            </p>
+          </div>
+          <div class="feature-card-bottom">
+            <span class="feature-tag">03 / INSIGHTS</span>
+            <div class="feature-arrow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Feature 4: Analyze -->
+        <div class="feature-card reveal-on-scroll" id="feature-card-analyze">
+          <div class="feature-card-top">
+            <div class="feature-icon-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+              </svg>
+            </div>
+            <h3 class="feature-title">Analyze</h3>
+            <p class="feature-desc">
+              AI-assisted runtime profiler detecting hot paths, cold boots, and memory bottlenecks automatically.
+            </p>
+          </div>
+          <div class="feature-card-bottom">
+            <span class="feature-tag">04 / OPTIMIZE</span>
+            <div class="feature-arrow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       6. WORKFLOW SECTION (CSS Flexbox on Desktop, Vertical on Mobile)
+       ========================================================================= -->
+  <section class="section-wrapper workflow-section" id="workflow">
+    <div class="section-container">
+      
+      <!-- Section Header -->
+      <div class="section-header-row reveal-on-scroll">
+        <span class="section-kicker">
+          <span class="eyebrow-dot"></span>
+          Execution Pipeline
+        </span>
+        <h2 class="section-title">The Three-Phase Flow</h2>
+        <p class="section-description">
+          A coherent architectural sequence designed to take ideas from conceptual spec to planetary-scale production with zero friction.
+        </p>
+      </div>
+
+      <!-- 3-Card Workflow Flexbox Container -->
+      <div class="workflow-flex-container">
+        
+        <!-- Step 01: Plan -->
+        <div class="workflow-step-card reveal-on-scroll" id="step-plan">
+          <div class="workflow-number">01</div>
+          <div class="workflow-content">
+            <h3 class="workflow-name">Plan</h3>
+            <p class="workflow-text">
+              Transform product specs into executable architecture graphs, dependency maps, and schema contracts in minutes.
+            </p>
+          </div>
+          <div class="workflow-visual-pill">
+            <div class="workflow-pill-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+            </div>
+            <span class="workflow-pill-text">spec.devflow.json</span>
+          </div>
+        </div>
+
+        <!-- Step 02: Build -->
+        <div class="workflow-step-card reveal-on-scroll" id="step-build">
+          <div class="workflow-number">02</div>
+          <div class="workflow-content">
+            <h3 class="workflow-name">Build</h3>
+            <p class="workflow-text">
+              Code in low-latency ephemeral cloud containers configured with pre-warmed language servers, mocks, and live reload.
+            </p>
+          </div>
+          <div class="workflow-visual-pill">
+            <div class="workflow-pill-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="16 18 22 12 16 6"></polyline>
+                <polyline points="8 6 2 12 8 18"></polyline>
+              </svg>
+            </div>
+            <span class="workflow-pill-text">devflow run --parallel</span>
+          </div>
+        </div>
+
+        <!-- Step 03: Ship -->
+        <div class="workflow-step-card reveal-on-scroll" id="step-ship">
+          <div class="workflow-number">03</div>
+          <div class="workflow-content">
+            <h3 class="workflow-name">Ship</h3>
+            <p class="workflow-text">
+              Zero-downtime canary deployment across 35 edge regions with automated rollbacks and real-time observability.
+            </p>
+          </div>
+          <div class="workflow-visual-pill">
+            <div class="workflow-pill-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"></path>
+                <path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"></path>
+              </svg>
+            </div>
+            <span class="workflow-pill-text">prod.devflow.cloud</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       7. STATISTICS SECTION
+       ========================================================================= -->
+  <section class="stats-section" id="stats">
+    <div class="section-container">
+      <div class="stats-grid">
+        
+        <!-- Stat 1 -->
+        <div class="stat-item reveal-on-scroll">
+          <div class="stat-metric" data-count="10" data-suffix="K+">10K+</div>
+          <div class="stat-label">Developers</div>
+        </div>
+
+        <!-- Stat 2 -->
+        <div class="stat-item reveal-on-scroll">
+          <div class="stat-metric" data-count="99.9" data-suffix="%">99.9%</div>
+          <div class="stat-label">Uptime</div>
+        </div>
+
+        <!-- Stat 3 -->
+        <div class="stat-item reveal-on-scroll">
+          <div class="stat-metric" data-count="2" data-suffix="M+">2M+</div>
+          <div class="stat-label">Deployments</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       8. FINAL CALL TO ACTION (CTA)
+       ========================================================================= -->
+  <section class="cta-section" id="cta">
+    <div class="section-container">
+      <div class="cta-box reveal-on-scroll">
+        <h2 class="cta-headline">Ready to build something great?</h2>
+        <p class="cta-subtext">
+          Join thousands of engineering teams building, testing, and shipping software faster with DevFlow.
+        </p>
+        <div class="cta-actions-group">
+          <button class="btn-cta-primary open-workspace-modal-btn" id="btn-cta-primary">Get Started Now</button>
+          <button class="btn-cta-secondary launch-demo-btn" id="btn-cta-secondary">View Live Demo</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       9. FOOTER SECTION (Minimal Multi-Column Footer)
+       ========================================================================= -->
+  <footer class="site-footer" id="footer">
+    <div class="section-container">
+      
+      <div class="footer-grid">
+        
+        <!-- Brand Info Column -->
+        <div class="footer-brand-col">
+          <div class="footer-brand-logo">
+            <div class="footer-brand-icon">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 4h7v7H4V4z" fill="currentColor"/>
+                <path d="M13 4h7v7h-7V4z" fill="currentColor" opacity="0.6"/>
+                <path d="M4 13h7v7H4v-7z" fill="currentColor" opacity="0.6"/>
+                <path d="M13 13h7v7h-7v-7z" fill="currentColor"/>
+              </svg>
+            </div>
+            <span>DEVFLOW</span>
+          </div>
+          <p class="footer-tagline">
+            The architectural developer productivity platform designed for precision, speed, and modern engineering excellence.
+          </p>
+        </div>
+
+        <!-- Column 1: Product -->
+        <div class="footer-col">
+          <h4 class="footer-col-heading">Product</h4>
+          <ul class="footer-link-list">
+            <li><button class="footer-link-btn" onclick="document.getElementById('feature-card-ship').click()">Ship Faster</button></li>
+            <li><button class="footer-link-btn" onclick="document.getElementById('feature-card-collaborate').click()">Collaborate</button></li>
+            <li><button class="footer-link-btn" onclick="document.getElementById('feature-card-track').click()">Track Work</button></li>
+            <li><button class="footer-link-btn" onclick="document.getElementById('feature-card-analyze').click()">Analyze</button></li>
+            <li><a href="#workflow" class="footer-link">Enterprise Cloud</a></li>
+          </ul>
+        </div>
+
+        <!-- Column 2: Resources -->
+        <div class="footer-col">
+          <h4 class="footer-col-heading">Resources</h4>
+          <ul class="footer-link-list">
+            <li><button class="footer-link-btn open-docs-btn">Documentation</button></li>
+            <li><a href="#stats" class="footer-link">Customer Stories</a></li>
+            <li><a href="#architecture" class="footer-link">Architecture Guides</a></li>
+            <li><button class="footer-link-btn open-docs-btn">API Reference</button></li>
+            <li><a href="#stats" class="footer-link">System Status</a></li>
+          </ul>
+        </div>
+
+        <!-- Column 3: Company -->
+        <div class="footer-col">
+          <h4 class="footer-col-heading">Company</h4>
+          <ul class="footer-link-list">
+            <li><a href="#hero" class="footer-link">About Us</a></li>
+            <li><a href="#stats" class="footer-link">Careers</a></li>
+            <li><a href="#cta" class="footer-link">Security &amp; Compliance</a></li>
+            <li><button class="footer-link-btn open-contact-btn">Contact Sales</button></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Footer Bottom Legal Bar -->
+      <div class="footer-bottom-bar">
+        <p>&copy; 2026 DevFlow Inc. All rights reserved.</p>
+        <div class="footer-legal-links">
+          <a href="#hero">Privacy</a>
+          <a href="#hero">Terms</a>
+          <a href="#hero">Cookies</a>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- =========================================================================
+       MODALS & DIALOGS
+       ========================================================================= -->
+
+  <!-- 1. Workspace Onboarding Modal ("Create your DevFlow workspace") -->
+  <div class="contact-modal-overlay modal-backdrop" id="workspace-onboarding-modal" aria-hidden="true">
+    <div class="contact-modal-card workspace-modal-card" role="dialog" aria-modal="true" aria-labelledby="ws-modal-title">
+      <button class="modal-close-btn" id="workspace-modal-close-btn" aria-label="Close dialog">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <!-- Workspace Creation Form View -->
+      <div id="workspace-modal-view-form">
+        <div class="modal-header-block">
+          <span class="modal-kicker">WORKSPACE SETUP</span>
+          <h3 class="modal-title" id="ws-modal-title">Create your DevFlow workspace</h3>
+          <p class="modal-desc">Configure your workspace and start building your next project.</p>
+        </div>
+        
+        <form class="modal-form" id="workspace-onboarding-form" novalidate>
+          <div class="form-group" id="group-ws-name">
+            <label class="form-label" for="ws-input-name">Workspace name</label>
+            <div class="input-wrapper">
+              <input type="text" class="form-input" id="ws-input-name" placeholder="DevFlow Engineering" autocomplete="organization" spellcheck="false" required>
+            </div>
+            <div class="form-error-msg" id="ws-error-name" role="alert">Please enter a workspace name.</div>
+          </div>
+
+          <div class="form-group" id="group-ws-role">
+            <label class="form-label" for="ws-input-role">Your role</label>
+            <div class="select-wrapper">
+              <select class="form-input form-select" id="ws-input-role" required>
+                <option value="Staff Platform Engineer" selected>Staff Platform Engineer</option>
+                <option value="Engineering Manager">Engineering Manager</option>
+                <option value="Fullstack Developer">Fullstack Developer</option>
+                <option value="Founder / CTO">Founder / CTO</option>
+                <option value="DevOps & Infrastructure Lead">DevOps &amp; Infrastructure Lead</option>
+              </select>
+              <div class="select-chevron" aria-hidden="true">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </div>
+            </div>
+            <div class="form-error-msg" id="ws-error-role" role="alert">Please select your role.</div>
+          </div>
+
+          <div class="form-group" id="group-ws-type">
+            <label class="form-label" for="ws-input-type">Project type</label>
+            <div class="select-wrapper">
+              <select class="form-input form-select" id="ws-input-type" required>
+                <option value="Web Application" selected>Web Application</option>
+                <option value="Distributed Microservices">Distributed Microservices</option>
+                <option value="Mobile & Cloud Edge">Mobile &amp; Cloud Edge</option>
+                <option value="Data & AI Pipeline">Data &amp; AI Pipeline</option>
+              </select>
+              <div class="select-chevron" aria-hidden="true">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </div>
+            </div>
+            <div class="form-error-msg" id="ws-error-type" role="alert">Please select a project type.</div>
+          </div>
+
+          <button type="submit" class="btn-modal-submit btn-ws-submit" id="btn-submit-workspace">
+            <span>CREATE WORKSPACE</span>
+            <svg class="btn-arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
+        </form>
+      </div>
+
+      <!-- Workspace Success State View -->
+      <div id="workspace-modal-view-success" class="workspace-success-state" style="display: none;">
+        <div class="ws-success-badge-wrap">
+          <div class="ws-success-check-badge">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+        </div>
+        
+        <span class="modal-kicker">SUCCESSFULLY INITIALIZED</span>
+        <h3 class="ws-success-title">Workspace created</h3>
+        <p class="ws-success-desc">Your DevFlow workspace is ready.</p>
+
+        <div class="ws-success-card-summary">
+          <div class="ws-success-summary-avatar" id="ws-success-avatar">DF</div>
+          <div class="ws-success-summary-info">
+            <span class="ws-success-summary-name" id="ws-success-summary-name">DevFlow Engineering</span>
+            <span class="ws-success-summary-role" id="ws-success-summary-role">Staff Platform Engineer • Web Application</span>
+          </div>
+          <span class="ws-success-status-pill">Active</span>
+        </div>
+
+        <button type="button" class="btn-modal-submit btn-ws-submit" id="btn-open-workspace-cta">
+          <span>OPEN WORKSPACE</span>
+          <svg class="btn-arrow-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Feature Details Modal (Deep Inspection) -->
+  <div class="contact-modal-overlay modal-backdrop" id="feature-detail-modal" aria-hidden="true">
+    <div class="contact-modal-card feature-modal-card" role="dialog" aria-modal="true" aria-labelledby="feat-modal-title">
+      <button class="modal-close-btn" id="feature-modal-close-btn" aria-label="Close modal">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+      <span class="modal-kicker" id="feat-modal-kicker">01 / VELOCITY</span>
+      <h3 class="modal-title" id="feat-modal-title">Ship Faster</h3>
+      <p class="feat-tagline" id="feat-modal-tagline">Reduce friction between code and planetary deployment.</p>
+      
+      <p class="modal-desc" id="feat-modal-desc">
+        Instant sub-second builds with incremental tree compilation and instant edge previews for every commit.
+      </p>
+
+      <!-- Key Benefits List -->
+      <div class="feat-modal-section">
+        <h4 class="feat-subheading">Key Architectural Benefits</h4>
+        <ul class="feat-benefits-list" id="feat-modal-benefits">
+          <!-- Populated by JS -->
+        </ul>
+      </div>
+
+      <!-- Live Terminal / Mini Visual Demo -->
+      <div class="feat-modal-section" id="feat-modal-demo-box">
+        <!-- Populated by JS -->
+      </div>
+
+      <!-- High Impact Metric Banner -->
+      <div class="feat-metric-banner">
+        <div class="feat-metric-val" id="feat-modal-metric-val">42% faster release cycles</div>
+        <div class="feat-metric-ctx" id="feat-modal-metric-ctx">Observed across 1,200+ high-velocity enterprise engineering squads.</div>
+      </div>
+
+      <div class="feat-modal-actions">
+        <button class="btn-modal-submit" id="feat-modal-cta-btn">Test in Live Demo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. New Project Modal -->
+  <div class="contact-modal-overlay modal-backdrop" id="project-modal" aria-hidden="true">
+    <div class="contact-modal-card" role="dialog" aria-modal="true" aria-labelledby="proj-modal-title">
+      <button class="modal-close-btn" id="project-modal-close-btn" aria-label="Close modal">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+      <span class="modal-kicker">Project Registry</span>
+      <h3 class="modal-title" id="proj-modal-title">Create New Project</h3>
+      <p class="modal-desc">Register a new repository or service cluster inside your DevFlow workspace.</p>
+      
+      <form class="modal-form" id="project-form">
+        <div class="form-group">
+          <label class="form-label" for="proj-input-name">Project Name</label>
+          <input type="text" class="form-input" id="proj-input-name" placeholder="e.g. Nexus Gateway" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="proj-input-desc">Description</label>
+          <textarea class="form-input form-textarea" id="proj-input-desc" placeholder="Brief summary of repository purpose and stack..." rows="3"></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label class="form-label" for="proj-input-status">Status</label>
+            <div class="select-wrapper">
+              <select class="form-input form-select" id="proj-input-status">
+                <option value="Active">Active</option>
+                <option value="In Planning">In Planning</option>
+                <option value="Completed">Completed</option>
+              </select>
+              <div class="select-chevron" aria-hidden="true">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group flex-1">
+            <label class="form-label" for="proj-input-cat">Category</label>
+            <div class="select-wrapper">
+              <select class="form-input form-select" id="proj-input-cat">
+                <option value="Productivity">Productivity</option>
+                <option value="Infrastructure">Infrastructure</option>
+                <option value="Science & AI">Science &amp; AI</option>
+                <option value="Geospatial">Geospatial</option>
+              </select>
+              <div class="select-chevron" aria-hidden="true">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-modal-submit" id="btn-submit-project">Create Project</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 4. Add Task Modal -->
+  <div class="contact-modal-overlay modal-backdrop" id="task-modal" aria-hidden="true">
+    <div class="contact-modal-card" role="dialog" aria-modal="true" aria-labelledby="task-modal-title">
+      <button class="modal-close-btn" id="task-modal-close-btn" aria-label="Close modal">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+      <span class="modal-kicker">Task Pipeline</span>
+      <h3 class="modal-title" id="task-modal-title">Add New Task</h3>
+      <p class="modal-desc">Add a task to automatically track commits, branch pairs, and sprint velocity.</p>
+      
+      <form class="modal-form" id="task-form">
+        <div class="form-group">
+          <label class="form-label" for="task-input-title">Task Title</label>
+          <input type="text" class="form-input" id="task-input-title" placeholder="e.g. Implement edge rate limiting" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="task-input-project">Assign to Project</label>
+          <div class="select-wrapper">
+            <select class="form-input form-select" id="task-input-project" required>
+              <!-- Populated dynamically -->
+            </select>
+            <div class="select-chevron" aria-hidden="true">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label class="form-label" for="task-input-priority">Priority</label>
+            <div class="select-wrapper">
+              <select class="form-input form-select" id="task-input-priority">
+                <option value="High">High Priority</option>
+                <option value="Medium" selected>Medium Priority</option>
+                <option value="Low">Low Priority</option>
+              </select>
+              <div class="select-chevron" aria-hidden="true">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group flex-1">
+            <label class="form-label" for="task-input-status">Status</label>
+            <div class="select-wrapper">
+              <select class="form-input form-select" id="task-input-status">
+                <option value="Todo" selected>To Do</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+              </select>
+              <div class="select-chevron" aria-hidden="true">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="task-input-due">Due Date</label>
+          <input type="date" class="form-input" id="task-input-due">
+        </div>
+
+        <button type="submit" class="btn-modal-submit" id="btn-submit-task">Add Task</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 5. Documentation Modal -->
+  <div class="contact-modal-overlay modal-backdrop" id="docs-modal" aria-hidden="true">
+    <div class="contact-modal-card docs-modal-card" role="dialog" aria-modal="true" aria-labelledby="docs-modal-title">
+      <button class="modal-close-btn" id="docs-modal-close-btn" aria-label="Close modal">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+      <div id="docs-modal-content">
+        <!-- Rendered by modals.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Contact Us Modal -->
+  <div class="contact-modal-overlay modal-backdrop" id="contact-modal" aria-hidden="true">
+    <div class="contact-modal-card" role="dialog" aria-modal="true" aria-labelledby="contact-modal-title">
+      <button class="modal-close-btn" id="modal-close-btn" aria-label="Close modal">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+      <span class="modal-kicker">Enterprise Solutions</span>
+      <h3 class="modal-title" id="contact-modal-title">Contact DevFlow Team</h3>
+      <p class="modal-desc">Schedule a live architecture walk-through or request early enterprise preview access.</p>
+      <form class="modal-form" id="contact-form">
+        <input type="text" class="form-input" placeholder="Your Name" required>
+        <input type="email" class="form-input" placeholder="Work Email (e.g. alex@company.com)" required>
+        <input type="text" class="form-input" placeholder="Company / Team Name (optional)">
+        <textarea class="form-input form-textarea" name="message" placeholder="How can DevFlow help your engineering team?" rows="3" required></textarea>
+        <button type="submit" class="btn-modal-submit" id="btn-submit-contact">Send Message</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Pure Vanilla JavaScript Application Entry Point -->
+  <script type="module" src="/js/main.js"></script>
+</body>
+</html>
