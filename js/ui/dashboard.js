@@ -7,6 +7,8 @@ import { workspaceService } from '../services/workspaceService.js';
 import { projectService } from '../services/projectService.js';
 import { taskService } from '../services/taskService.js';
 import { authService } from '../services/authService.js';
+import { googleAuthService } from '../services/googleAuthService.js';
+import { googleChatService } from '../services/googleChatService.js';
 import { toast } from './toast.js';
 
 class DashboardController {
@@ -16,6 +18,7 @@ class DashboardController {
     this.searchQuery = '';
     this.container = null;
     this.isVisible = false;
+    this.isGoogleSigningIn = false;
   }
 
   async init() {
@@ -37,6 +40,21 @@ class DashboardController {
 
     authService.subscribe((_user) => {
       this.render();
+    });
+
+    googleAuthService.subscribe((user, token) => {
+      if (this.currentTab === 'chat') {
+        if (token) {
+          googleChatService.fetchSpaces();
+        }
+        this.renderTabContent();
+      }
+    });
+
+    googleChatService.subscribe(() => {
+      if (this.currentTab === 'chat') {
+        this.renderTabContent();
+      }
     });
 
     // Navigation & Tab Switching
@@ -154,6 +172,9 @@ class DashboardController {
       this.bindTasksEvents();
     } else if (this.currentTab === 'analytics') {
       mainContent.innerHTML = this.getAnalyticsHtml();
+    } else if (this.currentTab === 'chat') {
+      mainContent.innerHTML = this.getChatHtml();
+      this.bindChatEvents();
     }
   }
 
@@ -635,6 +656,378 @@ class DashboardController {
       </div>
     `;
   }
+
+  // ==========================================
+  // VIEW 5: GOOGLE CHAT
+  // ==========================================
+  getChatHtml() {
+    const isConnected = googleAuthService.isConnected();
+    const googleUser = googleAuthService.getGoogleUser();
+    const { spaces, activeSpace, messages, isLoadingSpaces, isLoadingMessages, error } =
+      googleChatService;
+
+    if (!isConnected) {
+      return `
+        <div class="dash-chat-auth-card">
+          <div class="dash-chat-auth-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+          </div>
+          <h3 class="dash-panel-title" style="margin-bottom: 0.5rem; font-size: 1.25rem;">Connect Google Chat</h3>
+          <p class="dash-panel-sub" style="margin-bottom: 1.75rem; line-height: 1.5;">
+            Collaborate in real-time Chat Spaces, post project status reports, and sync team discussion threads with permission from your Google account.
+          </p>
+
+          <button class="gsi-material-button btn-google-signin" id="btn-google-chat-signin" type="button" aria-label="Sign in with Google">
+            <div class="gsi-material-button-state"></div>
+            <div class="gsi-material-button-content-wrapper">
+              <div class="gsi-material-button-icon">
+                <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" style="display: block;">
+                  <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
+                  <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
+                  <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
+                  <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
+                  <path fill="none" d="M0 0h48v48H0z"></path>
+                </svg>
+              </div>
+              <span class="gsi-material-button-contents">Sign in with Google</span>
+              <span style="display: none;">Sign in with Google</span>
+            </div>
+          </button>
+        </div>
+      `;
+    }
+
+    return `
+      <!-- Google Chat Connected Workspace -->
+      <div class="dash-panel-box full-width" style="padding: 0; overflow: hidden; background: #f8fafc;">
+        
+        <!-- Top Status Bar -->
+        <div style="padding: 0.875rem 1.25rem; background: #ffffff; border-bottom: 1px solid rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 32px; height: 32px; border-radius: 50%; background: #2563eb; color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8125rem;">
+              ${escapeHtml((googleUser?.displayName || googleUser?.email || 'G')[0].toUpperCase())}
+            </div>
+            <div>
+              <div style="font-size: 0.8125rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 6px;">
+                <span>${escapeHtml(googleUser?.displayName || 'Google Workspace User')}</span>
+                <span class="dash-status-pill active" style="font-size: 0.6rem;">Connected</span>
+              </div>
+              <div style="font-size: 0.6875rem; color: var(--text-muted);">${escapeHtml(googleUser?.email || '')}</div>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button class="dash-btn-secondary btn-chat-refresh" title="Refresh Google Chat spaces" style="padding: 6px 12px; font-size: 0.75rem;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+              <span>Refresh</span>
+            </button>
+            <button class="dash-btn-secondary btn-chat-disconnect" style="padding: 6px 12px; font-size: 0.75rem; color: #dc2626;">
+              <span>Disconnect</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Main 2-Column Chat Layout -->
+        <div class="dash-chat-layout" style="padding: 1.25rem;">
+          
+          <!-- Left Column: Spaces List -->
+          <div class="dash-chat-sidebar">
+            <div class="dash-chat-sidebar-header">
+              <span class="dash-chat-sidebar-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                <span>Spaces (${spaces.length})</span>
+              </span>
+              <button class="dash-link-action btn-open-create-space" style="font-size: 0.75rem;">+ New Space</button>
+            </div>
+
+            <div class="dash-chat-spaces-list">
+              ${isLoadingSpaces ? `
+                <div style="padding: 2rem 1rem; text-align: center; color: var(--text-muted); font-size: 0.8125rem;">
+                  Loading Google Chat spaces...
+                </div>
+              ` : spaces.length === 0 ? `
+                <div style="padding: 2rem 1rem; text-align: center; color: var(--text-muted); font-size: 0.8125rem;">
+                  <p style="margin-bottom: 0.5rem;">No spaces found.</p>
+                  <button class="dash-btn-primary btn-open-create-space" style="font-size: 0.75rem; padding: 6px 12px; margin: 0 auto;">
+                    + Create First Space
+                  </button>
+                </div>
+              ` : spaces.map((s) => {
+                const isSelected = activeSpace && activeSpace.name === s.name;
+                const displayName = s.displayName || s.name?.split('/').pop() || 'Untitled Space';
+                const spaceType = s.spaceType || (s.type === 'ROOM' ? 'SPACE' : 'CHAT');
+                return `
+                  <button class="dash-space-item ${isSelected ? 'active' : ''}" data-space-name="${escapeHtml(s.name)}">
+                    <div class="dash-space-avatar">
+                      ${spaceType === 'SPACE' ? '#' : '@'}
+                    </div>
+                    <div class="dash-space-details">
+                      <div class="dash-space-name">${escapeHtml(displayName)}</div>
+                      <div class="dash-space-meta">${escapeHtml(spaceType)}</div>
+                    </div>
+                  </button>
+                `;
+              }).join('')}
+            </div>
+          </div>
+
+          <!-- Right Column: Active Space Conversation & Composer -->
+          <div class="dash-chat-main">
+            ${!activeSpace ? `
+              <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-muted); padding: 2rem; text-align: center;">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 1rem; opacity: 0.5;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                <div style="font-weight: 600; margin-bottom: 4px; color: var(--text-primary);">Select a Space</div>
+                <div style="font-size: 0.8125rem;">Choose a Google Chat space from the left to read and post messages.</div>
+              </div>
+            ` : `
+              <!-- Active Space Header -->
+              <div class="dash-chat-header">
+                <div class="dash-chat-active-info">
+                  <div class="dash-space-avatar" style="width: 36px; height: 36px; font-size: 0.875rem;">
+                    ${activeSpace.spaceType === 'SPACE' ? '#' : '@'}
+                  </div>
+                  <div>
+                    <div style="font-size: 0.9375rem; font-weight: 700; color: var(--text-primary);">
+                      ${escapeHtml(activeSpace.displayName || activeSpace.name)}
+                    </div>
+                    <div style="font-size: 0.6875rem; color: var(--text-muted);">
+                      ${escapeHtml(activeSpace.spaceType || 'Google Chat Space')}
+                    </div>
+                  </div>
+                </div>
+
+                <div style="display: flex; gap: 6px;">
+                  <button class="dash-btn-secondary btn-share-sprint" title="Share Sprint Update to this space" style="padding: 5px 10px; font-size: 0.6875rem;">
+                    📢 Share Sprint
+                  </button>
+                </div>
+              </div>
+
+              <!-- Message History Scrollbox -->
+              <div class="dash-chat-messages" id="dash-chat-messages-container">
+                ${isLoadingMessages ? `
+                  <div style="padding: 3rem 1rem; text-align: center; color: var(--text-muted); font-size: 0.8125rem;">
+                    Loading messages...
+                  </div>
+                ` : messages.length === 0 ? `
+                  <div style="padding: 3rem 1rem; text-align: center; color: var(--text-muted); font-size: 0.8125rem;">
+                    <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">💬</div>
+                    <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 2px;">No messages yet</div>
+                    <div>Be the first to post a message or project update to this space.</div>
+                  </div>
+                ` : messages.map((m) => {
+                  const author = m.sender?.displayName || m.sender?.name?.split('/').pop() || 'User';
+                  const isSelf = m.sender?.email === googleUser?.email || m.sender?.name === googleUser?.uid;
+                  const time = m.createTime ? new Date(m.createTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+                  return `
+                    <div class="dash-chat-msg ${isSelf ? 'self' : ''}">
+                      <div class="dash-msg-avatar">
+                        ${escapeHtml(author[0].toUpperCase())}
+                      </div>
+                      <div>
+                        <div class="dash-msg-header">
+                          <span class="dash-msg-author">${escapeHtml(author)}</span>
+                          <span class="dash-msg-time">${escapeHtml(time)}</span>
+                        </div>
+                        <div class="dash-msg-bubble">
+                          ${escapeHtml(m.text || '')}
+                        </div>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+
+              <!-- Chat Input & Quick Action Chips -->
+              <div class="dash-chat-input-area">
+                <div class="dash-chat-quick-actions">
+                  <span style="font-size: 0.6875rem; color: var(--text-muted); align-self: center;">Quick Post:</span>
+                  <button class="dash-quick-chip quick-chip-status" type="button">⚡ Project Status</button>
+                  <button class="dash-quick-chip quick-chip-tasks" type="button">📋 Active Tasks</button>
+                  <button class="dash-quick-chip quick-chip-deploy" type="button">🚀 Release Preview</button>
+                </div>
+
+                <form class="dash-chat-form" id="dash-chat-form">
+                  <input
+                    type="text"
+                    id="dash-chat-input-text"
+                    class="dash-chat-input"
+                    placeholder="Message #${escapeHtml(activeSpace.displayName || 'space')}..."
+                    autocomplete="off"
+                  />
+                  <button type="submit" class="dash-chat-send-btn" id="dash-chat-send-btn">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    <span>Send</span>
+                  </button>
+                </form>
+              </div>
+            `}
+          </div>
+
+        </div>
+
+      </div>
+    `;
+  }
+
+  bindChatEvents() {
+    // 1. Google Sign-In button
+    const signinBtn = this.container.querySelector('#btn-google-chat-signin');
+    if (signinBtn) {
+      signinBtn.addEventListener('click', async () => {
+        try {
+          signinBtn.disabled = true;
+          toast.show('Connecting to Google Chat...', 'info');
+          await googleAuthService.signInWithGoogle();
+          toast.show('✓ Connected to Google Chat successfully!', 'success');
+          await googleChatService.fetchSpaces();
+          this.renderTabContent();
+        } catch (err) {
+          console.error('Sign in error:', err);
+          toast.show(err.message || 'Google Chat sign-in was cancelled or failed.', 'error');
+        } finally {
+          signinBtn.disabled = false;
+        }
+      });
+    }
+
+    // 2. Disconnect button
+    const disconnectBtn = this.container.querySelector('.btn-chat-disconnect');
+    if (disconnectBtn) {
+      disconnectBtn.addEventListener('click', async () => {
+        if (confirm('Disconnect Google Chat integration?')) {
+          await googleAuthService.signOut();
+          toast.show('Disconnected from Google Chat', 'info');
+          this.renderTabContent();
+        }
+      });
+    }
+
+    // 3. Refresh button
+    const refreshBtn = this.container.querySelector('.btn-chat-refresh');
+    if (refreshBtn) {
+      refreshBtn.addEventListener('click', async () => {
+        toast.show('Refreshing spaces...', 'info');
+        await googleChatService.fetchSpaces();
+      });
+    }
+
+    // 4. Space Item Selection
+    const spaceItems = this.container.querySelectorAll('.dash-space-item');
+    spaceItems.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const spaceName = btn.getAttribute('data-space-name');
+        const target = googleChatService.spaces.find((s) => s.name === spaceName);
+        if (target) {
+          googleChatService.setActiveSpace(target);
+        }
+      });
+    });
+
+    // 5. Create New Space Button
+    const createSpaceBtns = this.container.querySelectorAll('.btn-open-create-space');
+    createSpaceBtns.forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const spaceName = prompt('Enter a name for the new Google Chat Space:');
+        if (!spaceName || !spaceName.trim()) return;
+
+        try {
+          toast.show('Creating Google Chat space...', 'info');
+          const newSpace = await googleChatService.createSpace(spaceName.trim());
+          toast.show(`✓ Space "${newSpace.displayName || spaceName}" created!`, 'success');
+        } catch (err) {
+          toast.show(err.message || 'Failed to create space in Google Chat', 'error');
+        }
+      });
+    });
+
+    // 6. Send Message Form
+    const chatForm = this.container.querySelector('#dash-chat-form');
+    const chatInput = this.container.querySelector('#dash-chat-input-text');
+    const sendBtn = this.container.querySelector('#dash-chat-send-btn');
+
+    if (chatForm && chatInput) {
+      chatForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const text = chatInput.value?.trim();
+        if (!text) return;
+
+        if (!googleChatService.activeSpace) {
+          toast.show('Please select a space first.', 'error');
+          return;
+        }
+
+        try {
+          if (sendBtn) {
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<span>Sending...</span>';
+          }
+
+          await googleChatService.sendMessage(googleChatService.activeSpace.name, text);
+          chatInput.value = '';
+          toast.show('✓ Message posted to Google Chat', 'success');
+
+          // Scroll messages to bottom
+          const msgContainer = this.container.querySelector('#dash-chat-messages-container');
+          if (msgContainer) {
+            msgContainer.scrollTop = msgContainer.scrollHeight;
+          }
+        } catch (err) {
+          toast.show(err.message || 'Failed to send message', 'error');
+        } finally {
+          if (sendBtn) {
+            sendBtn.disabled = false;
+            sendBtn.innerHTML = `
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+              <span>Send</span>
+            `;
+          }
+        }
+      });
+    }
+
+    // 7. Quick Action Chips & Share Sprint
+    const chipStatus = this.container.querySelector('.quick-chip-status');
+    const chipTasks = this.container.querySelector('.quick-chip-tasks');
+    const chipDeploy = this.container.querySelector('.quick-chip-deploy');
+    const shareSprintBtn = this.container.querySelector('.btn-share-sprint');
+
+    if (chipStatus && chatInput) {
+      chipStatus.addEventListener('click', () => {
+        const ws = workspaceService.getWorkspace();
+        const stats = taskService.getStats();
+        chatInput.value = `📊 [DevFlow Update] Workspace "${ws?.name || 'DevFlow'}" status: ${stats.activeProjectsCount} active projects, ${stats.completedTasksCount}/${stats.totalTasksCount} tasks completed (${stats.overallProgressPercent}% velocity).`;
+        chatInput.focus();
+      });
+    }
+
+    if (chipTasks && chatInput) {
+      chipTasks.addEventListener('click', () => {
+        const tasks = taskService.getTasks().slice(0, 3);
+        const taskList = tasks.map((t) => `• [${t.status}] ${t.title}`).join(' | ');
+        chatInput.value = `📋 [DevFlow Tasks] Top sprint priorities: ${taskList || 'No active tasks'}`;
+        chatInput.focus();
+      });
+    }
+
+    if (chipDeploy && chatInput) {
+      chipDeploy.addEventListener('click', () => {
+        chatInput.value = `🚀 [DevFlow CI/CD] Live preview build healthy across 35 edge nodes (p99 latency 2.1ms).`;
+        chatInput.focus();
+      });
+    }
+
+    if (shareSprintBtn && chatInput) {
+      shareSprintBtn.addEventListener('click', () => {
+        const ws = workspaceService.getWorkspace();
+        const stats = taskService.getStats();
+        chatInput.value = `📢 [Sprint Report] Workspace: ${ws?.name || 'DevFlow'} | Overall Progress: ${stats.overallProgressPercent}% | Open Tasks: ${stats.openTasksCount} | Ready for review.`;
+        chatInput.focus();
+      });
+    }
+  }
 }
 
 function escapeHtml(str) {
@@ -647,3 +1040,4 @@ function escapeHtml(str) {
 }
 
 export const dashboard = new DashboardController();
+
